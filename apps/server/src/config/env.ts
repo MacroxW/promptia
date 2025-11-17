@@ -22,7 +22,8 @@ export const env = {
   port: parseNumber(process.env.PORT, 3000),
   jwtSecret: required('JWT_SECRET'),
   jwtExpiresIn: (process.env.JWT_EXPIRES_IN ?? '7d') as SignOptions['expiresIn'],
-  bcryptSaltRounds: parseNumber(process.env.BCRYPT_SALT_ROUNDS, 10)
+  bcryptSaltRounds: parseNumber(process.env.BCRYPT_SALT_ROUNDS, 10),
+  geminiApiKey: required('GEMINI_API_KEY')
 }
 
 export type Env = typeof env

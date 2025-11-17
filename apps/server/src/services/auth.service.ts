@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import type { LoginInput, RegisterInput } from '@repo/schemas'
 import type { LoginResponse } from '@repo/types'

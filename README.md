@@ -41,3 +41,9 @@ pnpm build            # Build todo
 pnpm --filter server docker:up   # Levantar Mongo local
 pnpm --filter server docker:down # Apagar Mongo local
 ```
+
+## API rápida
+- `POST /auth/register` / `POST /auth/login`: alta y autenticación de usuarios (devuelve JWT).
+- `GET /sessions` / `POST /sessions`: listar o crear sesiones de chat.
+- `GET /sessions/:id`: obtiene una sesión con su historial de mensajes.
+- `POST /chat/:sessionId`: envía un mensaje del usuario, llama a Gemini y guarda la respuesta del asistente.
