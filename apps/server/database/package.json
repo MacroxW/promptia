@@ -1,0 +1,13 @@
+{
+  "name": "@repo/database",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/client.ts",
+  "types": "./src/client.ts",
+  "scripts": {
+    "clean": "rm -rf node_modules dist"
+  },
+  "dependencies": {
+    "mongodb": "^6.8.0"
+  }
+}
