@@ -1,5 +1,5 @@
 {
-  "name": "@repo/schemas",
+  "name": "@promptia/schemas",
   "version": "1.0.0",
   "private": true,
   "main": "./src/index.ts",

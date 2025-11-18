@@ -29,7 +29,7 @@ importers:
       '@repo/database':
         specifier: workspace:*
         version: link:database
-      '@repo/schemas':
+      '@promptia/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
       '@repo/types':
