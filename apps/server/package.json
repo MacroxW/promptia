@@ -21,8 +21,8 @@
     "docker:logs:db": "docker compose logs -f mongodb",
     "docker:clean": "docker compose down -v",
     "docker:restart": "docker compose restart",
-    "db:setup": "pnpm docker:up && sleep 5 && pnpm db:generate && pnpm db:push",
-    "db:reset": "pnpm docker:down && pnpm docker:up && sleep 5 && pnpm db:push && pnpm db:seed"
+    "db:setup": "pnpm docker:up",
+    "db:reset": "pnpm docker:down && pnpm docker:up"
   },
   "dependencies": {
     "@repo/database": "workspace:*",

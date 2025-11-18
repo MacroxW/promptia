@@ -1,6 +1,6 @@
 import { MongoClient, Db, Collection, Document, ObjectId } from 'mongodb'
 
-const DEFAULT_DB_NAME = process.env.MONGODB_DB ?? 'chatllm'
+const DEFAULT_DB_NAME = process.env.MONGODB_DB ?? 'promptia_db'
 const DEFAULT_URI =
   process.env.MONGODB_URI ??
   `mongodb://admin:admin123@127.0.0.1:27017/${DEFAULT_DB_NAME}?authSource=admin`

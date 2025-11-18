@@ -1,14 +1,13 @@
 # Promptia
 
-Aplicación de chat con LLM usando Expo (React Native) + Node.js + Express + MongoDB (driver oficial).
+Aplicación de chat con LLM Node.js + Express + MongoDB
 
 ## Estructura
 ```
 ├── apps/
-│   ├── mobile/      # Expo app
+│   ├── web/         # React
 │   └── server/      # Express API
 └── packages/        # Código compartido
-    ├── database/    # Cliente MongoDB
     ├── types/       # TypeScript types
     ├── schemas/     # Zod schemas
     ├── utils/       # Helpers
