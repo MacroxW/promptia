@@ -27,7 +27,7 @@
   "dependencies": {
     "@repo/database": "workspace:*",
     "@repo/types": "workspace:*",
-    "@repo/schemas": "workspace:*",
+    "@promptia/schemas": "workspace:*",
     "@repo/utils": "workspace:*",
     "@repo/constants": "workspace:*",
     "express": "^4.18.2",
