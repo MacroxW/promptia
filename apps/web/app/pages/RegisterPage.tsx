@@ -54,7 +54,6 @@ const RegisterPage = () => {
                         </p>
                     </div>
 
-                    {/* Form */}
                     <div className="space-y-6">
                         <Input
                             label="Name (Optional)"
