@@ -12,7 +12,8 @@ export async function loginService(data: LoginInput) {
         }
     )
     if (!res.ok) {
-        throw new Error("Credenciales incorrectas")
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData.message || "Credenciales incorrectas")
     }
     return res.json()
 }
@@ -28,7 +29,8 @@ export async function registerService(data: RegisterInput) {
         }
     )
     if (!res.ok) {
-        throw new Error("Error en el registro")
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData.message || "Error en el registro")
     }
     return res.json()
 }

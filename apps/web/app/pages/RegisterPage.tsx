@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { registerSchema, type RegisterInput } from '@promptia/schemas'
 import { registerService } from "~/services/auth.service";
 import { Input } from "../components/Input";
-import { useNavigate } from "react-router";
 
 const RegisterPage = () => {
-    const navigate = useNavigate();
 
     const [formValues, setFormValues] = useState<RegisterInput>({
         email: '',
@@ -17,25 +15,28 @@ const RegisterPage = () => {
         setFormValues({ ...formValues, [key]: val })
     }
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            navigate("/chat", { replace: true });
-        }
-    }, [navigate]);
-
     const handleSubmit = async () => {
         try {
             await registerSchema.parseAsync(formValues)
 
             const data = await registerService(formValues)
-            localStorage.setItem("token", data.token)
-            window.dispatchEvent(new Event("auth-change"))
-            navigate("/chat", { replace: true })
+            // Assuming the backend returns a token on registration, or we redirect to login
+            // If it returns a token:
+            if (data.token) {
+                localStorage.setItem("token", data.token)
+                window.location.href = "/"
+            } else {
+                // If no token, maybe redirect to login
+                window.location.href = "/login"
+            }
 
         } catch (error) {
-            alert("Error en el registro o datos inválidos")
-            console.log("Error de registro", error)
+            if (error instanceof Error) {
+                alert(error.message)
+            } else {
+                alert("Error en el registro")
+            }
+            console.log("Error de validacion o registro", error)
         }
     }
 
@@ -49,7 +50,7 @@ const RegisterPage = () => {
                             Create Account
                         </h1>
                         <p className="text-gray-600 dark:text-gray-400">
-                            Join us today
+                            Join Promptia today
                         </p>
                     </div>
 
