@@ -2,7 +2,7 @@
 export const HomePage = () => {
     return (
         <div className="container mx-auto px-6 py-12">
-            {/* Hero Section */}
+
             <div className="text-center mb-16">
                 <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     Bienvenido a Promptia
@@ -20,7 +20,6 @@ export const HomePage = () => {
                 </div>
             </div>
 
-            {/* Features Grid */}
             <div className="grid md:grid-cols-3 gap-8">
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
                     <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
