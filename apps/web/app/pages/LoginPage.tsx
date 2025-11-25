@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { loginSchema, type LoginInput } from '@promptia/schemas'
 import { loginService } from "~/services/auth.service";
 import { Input } from "../components/Input";
+import { useNavigate } from "react-router";
 
 const LoginPage = () => {
+    const navigate = useNavigate();
 
     const [formValues, setFormValues] = useState<LoginInput>({
         email: 'user@gmail.com',
@@ -17,9 +19,9 @@ const LoginPage = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-            window.location.href = "/chat";
+            navigate("/chat", { replace: true });
         }
-    }, []);
+    }, [navigate]);
 
 
     const handleSubmit = async () => {
@@ -29,16 +31,7 @@ const LoginPage = () => {
 
             const data = await loginService(formValues)
             localStorage.setItem("token", data.token)
-            window.location.href = "/"
-
-            //----PROBANDO QUE ANDE SIN EL BACKEND ----//
-
-            /*
-            console.log("Simulando login SIN backend...");
-            localStorage.setItem("token", "token-falso-123");
-            //window.location.href = "/home";
-            return;
-            */
+            navigate("/chat", { replace: true })
 
         } catch (error) {
             alert("Formato de datos incorrecto")
