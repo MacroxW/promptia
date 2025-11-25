@@ -27,14 +27,14 @@ const LoginPage = () => {
     const handleSubmit = async () => {
         try {
             await loginSchema.parseAsync(formValues)
-            console.log("El formato es valido", formValues)
 
             const data = await loginService(formValues)
             localStorage.setItem("token", data.token)
+            window.dispatchEvent(new Event("auth-change"))
             navigate("/chat", { replace: true })
 
         } catch (error) {
-            alert("Formato de datos incorrecto")
+            alert("Formato de datos incorrecto o credenciales inválidas")
             console.log("Error de validacion", error)
         }
     }
