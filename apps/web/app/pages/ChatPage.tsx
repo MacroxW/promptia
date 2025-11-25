@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Sidebar } from "../components/Sidebar";
+import { MessageBubble } from "../components/MessageBubble";
+import { ChatInput } from "../components/ChatInput";
 
 const ChatPage = () => {
     const [messages, setMessages] = useState<{
@@ -107,40 +109,20 @@ const ChatPage = () => {
                         </div>
                     ) : (
                         messages.map((m, i) => (
-                            <div key={i} className={`flex mb-4 ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
-                                <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-md ${m.sender === "user"
-                                    ? "bg-blue-600 text-white rounded-br-sm"
-                                    : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-sm"
-                                    }`}>
-                                    {m.text}
-                                </div>
-                            </div>
+                            <MessageBubble key={i} text={m.text} sender={m.sender} />
                         ))
                     )}
                 </div>
 
                 {/* Input Area */}
-                <div className="p-6 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-                    <div className="flex gap-3 max-w-4xl mx-auto">
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                            className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            placeholder="Escribí un mensaje..."
-                            disabled={!currentSessionId}
-                        />
+                <ChatInput
+                    value={input}
+                    onChange={setInput}
+                    onSend={handleSend}
+                    isLoading={isLoading}
+                    disabled={!currentSessionId}
+                />
 
-                        <button
-                            onClick={handleSend}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={!input.trim() || isLoading || !currentSessionId}
-                        >
-                            {isLoading ? "..." : "Enviar"}
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     );

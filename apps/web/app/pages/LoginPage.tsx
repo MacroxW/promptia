@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { loginSchema, type LoginInput } from '@promptia/schemas'
 import { loginService } from "~/services/auth.service";
+import { Input } from "../components/Input";
 
 const LoginPage = () => {
 
@@ -62,31 +63,21 @@ const LoginPage = () => {
 
                     {/* Form */}
                     <div className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                value={formValues.email}
-                                onChange={(v) => setValue('email', v.target.value)}
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                placeholder="tu@email.com"
-                            />
-                        </div>
+                        <Input
+                            label="Email"
+                            type="email"
+                            value={formValues.email}
+                            onChange={(e) => setValue('email', e.target.value)}
+                            placeholder="tu@email.com"
+                        />
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                value={formValues.password}
-                                onChange={(v) => setValue('password', v.target.value)}
-                                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                placeholder="••••••••"
-                            />
-                        </div>
+                        <Input
+                            label="Password"
+                            type="password"
+                            value={formValues.password}
+                            onChange={(e) => setValue('password', e.target.value)}
+                            placeholder="••••••••"
+                        />
 
                         <button
                             onClick={handleSubmit}
