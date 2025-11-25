@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { loginSchema, type LoginInput }  from '@promptia/schemas'
+import { loginService } from "~/services/auth.service";
  
 const LoginPage = () => {
 
@@ -25,32 +26,18 @@ const LoginPage = () => {
             await loginSchema.parseAsync(formValues)
             console.log("El formato es valido", formValues)
 
-            /*
-            const res = await fetch("http://localhost:5173/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(formValues)
-            })
-
-            if(!res.ok){
-                alert("Datos incorrectos")
-                return 
-            }
-
-            /*
-            const data = await res.json()
+            const data = await loginService(formValues)
             localStorage.setItem("token", data.token)
-            window.location.href = "/home"
-            */
+            window.location.href ="/"
 
             //----PROBANDO QUE ANDE SIN EL BACKEND ----//
 
+            /*
             console.log("Simulando login SIN backend...");
             localStorage.setItem("token", "token-falso-123");
             //window.location.href = "/home";
             return;
+            */
 
         } catch (error) {
             alert("Formato de datos incorrecto")
