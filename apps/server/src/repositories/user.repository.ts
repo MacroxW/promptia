@@ -56,10 +56,14 @@ export async function createUser(data: {
     updatedAt: now
   }
 
-  const result = await collection.insertOne(doc)
+  const result = await collection.insertOne(doc as any)
 
   return mapUser({
     ...doc,
     _id: result.insertedId
   } as WithId<UserDocument>)
+}
+export async function deleteUser(email: string): Promise<void> {
+  const collection = await usersCollection()
+  await collection.deleteOne({ email })
 }

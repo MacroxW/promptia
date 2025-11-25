@@ -5,8 +5,8 @@ import { loginService } from "~/services/auth.service";
 const LoginPage = () => {
 
     const [formValues, setFormValues] = useState<LoginInput>({
-        email: '',
-        password: ''
+        email: 'user@gmail.com',
+        password: 'password12345'
     })
 
     const setValue = (key: keyof LoginInput, val: string) => {
