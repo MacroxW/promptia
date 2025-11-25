@@ -4,13 +4,18 @@ import { chatService } from "../services/chat.service";
 export class ChatController {
   async sendMessage(req: Request, res: Response) {
     try {
-      const { message } = req.body;
+      const { message, sessionId } = req.body;
+      const userId = req.user?.id;
 
-      if (!message) {
-        return res.status(400).json({ error: "Message is required" });
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
       }
 
-      const response = await chatService.sendMessage(message);
+      if (!message || !sessionId) {
+        return res.status(400).json({ error: "Message and sessionId are required" });
+      }
+
+      const response = await chatService.sendMessage(userId, sessionId, message);
       return res.json({ response });
     } catch (error) {
       console.error("Chat controller error:", error);

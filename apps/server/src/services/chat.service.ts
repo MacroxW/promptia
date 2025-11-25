@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createMessage } from "@/repositories/message.repository";
 
 export class ChatService {
   private genAI: GoogleGenerativeAI;
@@ -13,11 +14,27 @@ export class ChatService {
     this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   }
 
-  async sendMessage(message: string): Promise<string> {
+  async sendMessage(userId: string, sessionId: string, message: string): Promise<string> {
     try {
+      // Save user message
+      await createMessage({
+        sessionId,
+        role: "user",
+        content: message
+      });
+
       const result = await this.model.generateContent(message);
       const response = await result.response;
-      return response.text();
+      const text = response.text();
+
+      // Save bot response
+      await createMessage({
+        sessionId,
+        role: "assistant",
+        content: text
+      });
+
+      return text;
     } catch (error) {
       console.error("Error communicating with Gemini API:", error);
       throw new Error("Failed to get response from AI");
