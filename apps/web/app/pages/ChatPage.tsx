@@ -1,86 +1,16 @@
-import { useState, useEffect } from "react";
 import { Sidebar } from "../components/Sidebar";
+import { useChat } from "../hooks/useChat";
 
 const ChatPage = () => {
-    const [messages, setMessages] = useState<{
-        sender: "user" | "bot";
-        text: string
-    }[]>([])
-
-    const [input, setInput] = useState("")
-    const [isLoading, setIsLoading] = useState(false);
-    const [currentSessionId, setCurrentSessionId] = useState<string>("");
-
-    useEffect(() => {
-        if (currentSessionId) {
-            fetchSessionMessages(currentSessionId);
-        }
-    }, [currentSessionId]);
-
-    const fetchSessionMessages = async (sessionId: string) => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:4000/api/sessions/${sessionId}`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                const formattedMessages = data.messages.map((msg: any) => ({
-                    sender: msg.role === "assistant" ? "bot" : msg.role,
-                    text: msg.content
-                }));
-                setMessages(formattedMessages);
-            }
-        } catch (error) {
-            console.error("Error fetching messages:", error);
-        }
-    };
-
-    const handleSend = async () => {
-        if (!input.trim() || isLoading || !currentSessionId) {
-            return
-        }
-
-        const userMessage = input;
-        setMessages(prev => [...prev, { sender: "user", text: userMessage }])
-        setInput("")
-        setIsLoading(true);
-
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:4000/api/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    message: userMessage,
-                    sessionId: currentSessionId
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to get response");
-            }
-
-            const data = await response.json();
-            setMessages((prev) => [
-                ...prev,
-                { sender: "bot", text: data.response },
-            ]);
-        } catch (error) {
-            console.error("Error sending message:", error);
-            setMessages((prev) => [
-                ...prev,
-                { sender: "bot", text: "Lo siento, hubo un error al procesar tu mensaje." },
-            ]);
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    const {
+        messages,
+        input,
+        setInput,
+        isLoading,
+        currentSessionId,
+        setCurrentSessionId,
+        handleSend
+    } = useChat();
 
     return (
         <div className="flex h-[calc(100vh-64px)]">
