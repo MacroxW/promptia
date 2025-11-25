@@ -1,4 +1,4 @@
-import { Links, Meta, Scripts, ScrollRestoration, useNavigate } from "react-router";
+import { Links, Meta, Scripts, ScrollRestoration, useNavigate, Link } from "react-router";
 import { useEffect, useState } from "react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -33,9 +33,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div className="container mx-auto px-6 py-4 flex justify-between items-center">
 
             <div aria-label="title">
-              <h1 className="text-2xl font-bold">
+              <Link to="/" className="text-2xl font-bold hover:opacity-80 transition-opacity">
                 Promptia
-              </h1>
+              </Link>
             </div>
 
             <nav aria-label="navs">

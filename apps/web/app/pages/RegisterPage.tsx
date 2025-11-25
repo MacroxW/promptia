@@ -1,51 +1,44 @@
 import { useState } from "react";
-import { loginSchema, type LoginInput } from '@promptia/schemas'
-import { loginService } from "~/services/auth.service";
+import { registerSchema, type RegisterInput } from '@promptia/schemas'
+import { registerService } from "~/services/auth.service";
 import { Input } from "../components/Input";
 
-const LoginPage = () => {
+const RegisterPage = () => {
 
-    const [formValues, setFormValues] = useState<LoginInput>({
-        email: 'user@gmail.com',
-        password: 'password12345'
+    const [formValues, setFormValues] = useState<RegisterInput>({
+        email: '',
+        password: '',
+        name: ''
     })
 
-    const setValue = (key: keyof LoginInput, val: string) => {
+    const setValue = (key: keyof RegisterInput, val: string) => {
         setFormValues({ ...formValues, [key]: val })
     }
 
-    /*
-    const validateForm = () => {
-        loginSchema.parseAsync(formValues) // tira error si los datos estan mal
-            .then(console.log)
-            .catch(console.log)
-    }
-    */
-
     const handleSubmit = async () => {
         try {
-            await loginSchema.parseAsync(formValues)
-            console.log("El formato es valido", formValues)
+            await registerSchema.parseAsync(formValues)
 
-            const data = await loginService(formValues)
-            localStorage.setItem("token", data.token)
-            window.location.href = "/"
-
-            //----PROBANDO QUE ANDE SIN EL BACKEND ----//
-
-            /*
-            console.log("Simulando login SIN backend...");
-            localStorage.setItem("token", "token-falso-123");
-            //window.location.href = "/home";
-            return;
-            */
+            const data = await registerService(formValues)
+            // Assuming the backend returns a token on registration, or we redirect to login
+            // If it returns a token:
+            if (data.token) {
+                localStorage.setItem("token", data.token)
+                window.location.href = "/"
+            } else {
+                // If no token, maybe redirect to login
+                window.location.href = "/login"
+            }
 
         } catch (error) {
-            alert("Formato de datos incorrecto")
-            console.log("Error de validacion", error)
+            if (error instanceof Error) {
+                alert(error.message)
+            } else {
+                alert("Error en el registro")
+            }
+            console.log("Error de validacion o registro", error)
         }
     }
-
 
     return (
         <div className="container mx-auto px-6 py-12 flex items-center justify-center min-h-[80vh]">
@@ -54,15 +47,23 @@ const LoginPage = () => {
                     {/* Header */}
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                            Welcome Back
+                            Create Account
                         </h1>
                         <p className="text-gray-600 dark:text-gray-400">
-                            Sign in to your account
+                            Join Promptia today
                         </p>
                     </div>
 
                     {/* Form */}
                     <div className="space-y-6">
+                        <Input
+                            label="Name (Optional)"
+                            type="text"
+                            value={formValues.name || ''}
+                            onChange={(e) => setValue('name', e.target.value)}
+                            placeholder="John Doe"
+                        />
+
                         <Input
                             label="Email"
                             type="email"
@@ -83,13 +84,13 @@ const LoginPage = () => {
                             onClick={handleSubmit}
                             className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 shadow-md hover:shadow-lg transition-all"
                         >
-                            Sign In
+                            Sign Up
                         </button>
                     </div>
 
                     {/* Footer */}
                     <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-                        Don't have an account? <a href="/register" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Sign up</a>
+                        Already have an account? <a href="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Sign in</a>
                     </div>
                 </div>
             </div>
@@ -97,4 +98,4 @@ const LoginPage = () => {
     )
 };
 
-export default LoginPage
+export default RegisterPage
