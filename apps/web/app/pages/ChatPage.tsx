@@ -1,30 +1,52 @@
 import { useState } from "react";
 
 const ChatPage = () => {
-
     const [messages, setMessages] = useState<{
         sender: "user" | "bot";
         text: string
     }[]>([])
 
     const [input, setInput] = useState("")
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSend = () => {
-        if (!input.trim()) {
+    const handleSend = async () => {
+        if (!input.trim() || isLoading) {
             return
         }
 
-        setMessages([...messages, { sender: "user", text: input }])
+        const userMessage = input;
+        setMessages(prev => [...prev, { sender: "user", text: userMessage }])
         setInput("")
+        setIsLoading(true);
 
-        setTimeout(() => {
+        try {
+            const response = await fetch("http://localhost:4000/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message: userMessage }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to get response");
+            }
+
+            const data = await response.json();
             setMessages((prev) => [
                 ...prev,
-                { sender: "bot", text: "Respuesta simulada del señor Bot." },
-            ])
-        }, 1000)
+                { sender: "bot", text: data.response },
+            ]);
+        } catch (error) {
+            console.error("Error sending message:", error);
+            setMessages((prev) => [
+                ...prev,
+                { sender: "bot", text: "Lo siento, hubo un error al procesar tu mensaje." },
+            ]);
+        } finally {
+            setIsLoading(false);
+        }
     }
-
 
     return (
         <div className="container mx-auto px-6 py-8 max-w-4xl">
@@ -44,8 +66,8 @@ const ChatPage = () => {
                         messages.map((m, i) => (
                             <div key={i} className={`flex mb-4 ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
                                 <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-md ${m.sender === "user"
-                                        ? "bg-blue-600 text-white rounded-br-sm"
-                                        : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-sm"
+                                    ? "bg-blue-600 text-white rounded-br-sm"
+                                    : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-sm"
                                     }`}>
                                     {m.text}
                                 </div>
@@ -68,9 +90,9 @@ const ChatPage = () => {
                         <button
                             onClick={handleSend}
                             className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={!input.trim()}
+                            disabled={!input.trim() || isLoading}
                         >
-                            Enviar
+                            {isLoading ? "..." : "Enviar"}
                         </button>
                     </div>
                 </div>

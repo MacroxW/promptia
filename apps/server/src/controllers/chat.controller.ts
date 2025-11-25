@@ -1,24 +1,22 @@
-import type { NextFunction, Request, Response } from 'express'
-import { createMessageSchema, type CreateMessageInput } from '@promptia/schemas'
+import { Request, Response } from "express";
+import { chatService } from "../services/chat.service";
 
-import { AppError } from '@/middleware/error-handler'
-import { sendChatMessage } from '@/services/chat.service'
+export class ChatController {
+  async sendMessage(req: Request, res: Response) {
+    try {
+      const { message } = req.body;
 
-type ChatRequest = Request<{ sessionId: string }, unknown, CreateMessageInput>
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
 
-export async function chatController(req: ChatRequest, res: Response, next: NextFunction) {
-  try {
-    if (!req.user) {
-      throw new AppError('No autorizado', 401)
+      const response = await chatService.sendMessage(message);
+      return res.json({ response });
+    } catch (error) {
+      console.error("Chat controller error:", error);
+      return res.status(500).json({ error: "Internal server error" });
     }
-    const payload = createMessageSchema.parse(req.body)
-    const result = await sendChatMessage({
-      sessionId: req.params.sessionId,
-      userId: req.user.id,
-      payload
-    })
-    return res.status(200).json(result)
-  } catch (error) {
-    return next(error)
   }
 }
+
+export const chatController = new ChatController();

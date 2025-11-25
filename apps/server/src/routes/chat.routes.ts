@@ -1,9 +1,8 @@
-import { Router, type Router as ExpressRouter } from 'express'
+import { Router } from "express";
+import { chatController } from "../controllers/chat.controller";
 
-import { chatController } from '@/controllers/chat.controller'
+const router: Router = Router();
 
-const router: ExpressRouter = Router()
+router.post("/", chatController.sendMessage.bind(chatController));
 
-router.post('/:sessionId', chatController)
-
-export default router
+export default router;
