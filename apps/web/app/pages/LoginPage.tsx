@@ -21,13 +21,6 @@ const LoginPage = () => {
         }
     }, []);
 
-    /*
-    const validateForm = () => {
-        loginSchema.parseAsync(formValues) // tira error si los datos estan mal
-            .then(console.log)
-            .catch(console.log)
-    }
-    */
 
     const handleSubmit = async () => {
         try {

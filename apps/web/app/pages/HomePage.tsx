@@ -22,7 +22,7 @@ export const HomePage = () => {
             </div>
 
             {/* Features Grid */}
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 gap-8">
                 <FeatureCard
                     icon="💬"
                     title="Chat en tiempo real"
@@ -35,13 +35,6 @@ export const HomePage = () => {
                     title="Autenticación segura"
                     description="Tu datos estan protegidos con prácticas modernas de seguridad"
                     iconBgClass="bg-purple-100 dark:bg-purple-900"
-                />
-
-                <FeatureCard
-                    icon="⚡"
-                    title="Rápido y Responsive"
-                    description="Construido con rendimiento y experiencia del usuario en mente"
-                    iconBgClass="bg-green-100 dark:bg-green-900"
                 />
             </div>
         </div>
