@@ -15,7 +15,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
             <div aria-label="title">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                My Web App
+                Promptia
               </h1>
             </div>
 
@@ -50,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
           <div className="container mx-auto px-6 py-8 text-center text-sm text-gray-600 dark:text-gray-400">
-            &copy; {new Date().getFullYear()} My Web App. All rights reserved.
+            &copy; {new Date().getFullYear()} Promptia. All rights reserved.
           </div>
         </footer>
         <ScrollRestoration />
