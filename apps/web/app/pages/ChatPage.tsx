@@ -1,6 +1,7 @@
 import { Sidebar } from "../components/Sidebar";
 import { useChat } from "../hooks/useChat";
 import ReactMarkdown from "react-markdown";
+import { useEffect } from "react";
 
 const ChatPage = () => {
     const {
@@ -12,6 +13,13 @@ const ChatPage = () => {
         setCurrentSessionId,
         handleSend
     } = useChat();
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            window.location.href = "/login";
+        }
+    }, []);
 
     return (
         <div className="flex h-[calc(100vh-64px)]">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { loginSchema, type LoginInput } from '@promptia/schemas'
 import { loginService } from "~/services/auth.service";
 import { Input } from "../components/Input";
@@ -13,6 +13,13 @@ const LoginPage = () => {
     const setValue = (key: keyof LoginInput, val: string) => {
         setFormValues({ ...formValues, [key]: val })
     }
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            window.location.href = "/chat";
+        }
+    }, []);
 
     /*
     const validateForm = () => {
