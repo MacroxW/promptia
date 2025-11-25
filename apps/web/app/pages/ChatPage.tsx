@@ -42,7 +42,15 @@ const ChatPage = () => {
                                     ? "bg-blue-600 text-white rounded-br-sm"
                                     : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-sm"
                                     }`}>
-                                    {m.text}
+                                    {m.text ? (
+                                        m.text
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))

@@ -21,8 +21,8 @@ importers:
   apps/server:
     dependencies:
       '@google/generative-ai':
-        specifier: ^0.1.3
-        version: 0.1.3
+        specifier: ^0.24.1
+        version: 0.24.1
       '@promptia/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
@@ -576,8 +576,8 @@ packages:
     resolution: {integrity: sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
 
-  '@google/generative-ai@0.1.3':
-    resolution: {integrity: sha512-Cm4uJX1sKarpm1mje/MiOIinM7zdUUrQp/5/qGPAgznbdd/B9zup5ehT6c1qGqycFcSopTA1J1HpqHS5kJR8hQ==}
+  '@google/generative-ai@0.24.1':
+    resolution: {integrity: sha512-MqO+MLfM6kjxcKoy0p1wRzG3b4ZZXtPI+z2IE26UogS2Cm/XHO+7gGRBh6gcJsOiIVoH93UwKvW4HdgiOZCy9Q==}
     engines: {node: '>=18.0.0'}
 
   '@humanwhocodes/config-array@0.13.0':
@@ -3450,7 +3450,7 @@ snapshots:
 
   '@eslint/js@8.57.1': {}
 
-  '@google/generative-ai@0.1.3': {}
+  '@google/generative-ai@0.24.1': {}
 
   '@humanwhocodes/config-array@0.13.0':
     dependencies:

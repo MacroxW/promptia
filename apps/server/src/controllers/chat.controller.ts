@@ -40,13 +40,16 @@ export class ChatController {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      const result = await chatService.streamMessage(userId, sessionId, message);
+      const stream = await chatService.streamMessage(userId, sessionId, message);
       let fullText = "";
 
-      for await (const chunk of result.stream) {
-        const chunkText = chunk.text();
-        fullText += chunkText;
-        res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+      for await (const chunk of stream) {
+        if (chunk.text) {
+          fullText += chunk.text;
+          res.write(`data: ${JSON.stringify({ text: chunk.text })}\n\n`);
+          // Attempt to flush if possible (not standard in Express without compression, but good practice)
+          if ((res as any).flush) (res as any).flush();
+        }
       }
 
       // Save bot response to DB after streaming is complete
