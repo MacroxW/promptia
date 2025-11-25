@@ -13,6 +13,40 @@ export class ChatService {
     this.genAI = new GoogleGenerativeAI(apiKey);
     this.model = this.genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
+      tools: [
+        {
+          functionDeclarations: [
+            {
+              name: "get_current_weather",
+              description: "Get the current weather in a given location",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  location: {
+                    type: "STRING",
+                    description: "The city and state, e.g. San Francisco, CA",
+                  },
+                },
+                required: ["location"],
+              },
+            },
+            {
+              name: "generate_image",
+              description: "Generate an image based on a prompt",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  prompt: {
+                    type: "STRING",
+                    description: "The description of the image to generate",
+                  },
+                },
+                required: ["prompt"],
+              },
+            },
+          ],
+        },
+      ],
     });
   }
 
@@ -70,7 +104,12 @@ export class ChatService {
 
     for await (const chunk of result.stream) {
       const chunkText = chunk.text();
-      const calls = chunk.functionCalls();
+      // Check for function call
+      let calls;
+      if (typeof chunk.functionCalls === 'function') {
+        calls = chunk.functionCalls();
+      }
+
       if (calls && calls.length > 0) {
         functionCall = calls[0];
         break;
@@ -113,6 +152,12 @@ export class ChatService {
       const temp = Math.floor(Math.random() * 30) + 10;
       const condition = weathers[Math.floor(Math.random() * weathers.length)];
       return { weather: condition, temperature: temp, location: location, unit: "celsius" };
+    } else if (name === "generate_image") {
+      const prompt = args.prompt;
+      const encodedPrompt = encodeURIComponent(prompt);
+      const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
+      // Return markdown image
+      return `![Generated Image](${imageUrl})`;
     }
     return { error: "Unknown tool" };
   }

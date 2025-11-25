@@ -1,5 +1,6 @@
 import { Sidebar } from "../components/Sidebar";
 import { useChat } from "../hooks/useChat";
+import ReactMarkdown from "react-markdown";
 
 const ChatPage = () => {
     const {
@@ -43,7 +44,9 @@ const ChatPage = () => {
                                     : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-sm"
                                     }`}>
                                     {m.text ? (
-                                        m.text
+                                        <div className="markdown-body">
+                                            <ReactMarkdown>{m.text}</ReactMarkdown>
+                                        </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
                                             <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
