@@ -22,7 +22,7 @@ app.get('/health', (_req, res) => {
 })
 
 app.use('/auth', authRoutes)
-app.use('/sessions', authenticate, sessionRoutes)
+app.use('/api/sessions', authenticate, sessionRoutes)
 app.use('/chat', authenticate, chatRoutes)
 app.use(errorHandler)
 
