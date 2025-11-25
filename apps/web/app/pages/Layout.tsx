@@ -3,15 +3,12 @@ import { useEffect, useState } from "react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // We can't use useNavigate here directly because Layout might be outside the Router context depending on how Remix/React Router is set up, 
-  // but usually in Remix/RR v7 it is inside. If it fails, we'll use window.location.
-  // However, standard React Router usage implies Layout is used within a Route or Router.
-  // Let's assume standard behavior or use window.location for safety if unsure about the router setup in this specific monorepo structure.
-  // actually, looking at the imports, it seems to be using "react-router".
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token);
+    setIsLoading(false);
   }, []);
 
   const handleLogout = () => {
@@ -55,7 +52,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </nav>
 
             <div aria-label="auth" className="flex gap-3">
-              {isAuthenticated ? (
+              {isLoading ? (
+                <div className="flex gap-3 animate-pulse">
+                  <div className="w-20 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                  <div className="w-24 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                </div>
+              ) : isAuthenticated ? (
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors"
