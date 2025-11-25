@@ -1,3 +1,4 @@
+import { FeatureCard } from "../components/FeatureCard";
 
 export const HomePage = () => {
     return (
@@ -20,36 +21,28 @@ export const HomePage = () => {
                 </div>
             </div>
 
+            {/* Features Grid */}
             <div className="grid md:grid-cols-3 gap-8">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
-                        <span className="text-2xl">💬</span>
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">Chat en tiempo real</h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Comunicate al instante con nuestro sistema de chat inteligente
-                    </p>
-                </div>
+                <FeatureCard
+                    icon="💬"
+                    title="Chat en tiempo real"
+                    description="Comunicate al instante con nuestro sistema de chat inteligente"
+                    iconBgClass="bg-blue-100 dark:bg-blue-900"
+                />
 
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
-                        <span className="text-2xl">🔒</span>
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">Autenticación segura</h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Tu datos estan protegidos con prácticas modernas de seguridad
-                    </p>
-                </div>
+                <FeatureCard
+                    icon="🔒"
+                    title="Autenticación segura"
+                    description="Tu datos estan protegidos con prácticas modernas de seguridad"
+                    iconBgClass="bg-purple-100 dark:bg-purple-900"
+                />
 
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                        <span className="text-2xl">⚡</span>
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2"> Rápido y Responsive</h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Construido con rendimiento y experiencia del usuario en mente
-                    </p>
-                </div>
+                <FeatureCard
+                    icon="⚡"
+                    title="Rápido y Responsive"
+                    description="Construido con rendimiento y experiencia del usuario en mente"
+                    iconBgClass="bg-green-100 dark:bg-green-900"
+                />
             </div>
         </div>
     );
