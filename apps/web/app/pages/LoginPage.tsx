@@ -6,8 +6,8 @@ import { Input } from "../components/Input";
 const LoginPage = () => {
 
     const [formValues, setFormValues] = useState<LoginInput>({
-        email: '',
-        password: ''
+        email: 'user@gmail.com',
+        password: 'password12345'
     })
 
     const setValue = (key: keyof LoginInput, val: string) => {
