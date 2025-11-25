@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express'
-import { createSessionSchema } from '@repo/schemas'
+import { createSessionSchema } from '@promptia/schemas'
 import type { Session } from '@repo/types'
 
 import {

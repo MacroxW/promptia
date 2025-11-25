@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import type { LoginInput, RegisterInput } from '@repo/schemas'
+import type { LoginInput, RegisterInput } from '@promptia/schemas'
 import type { LoginResponse } from '@repo/types'
 import { sanitizeEmail } from '@repo/utils'
 

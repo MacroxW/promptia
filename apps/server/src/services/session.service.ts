@@ -1,4 +1,4 @@
-import type { CreateSessionInput } from '@repo/schemas'
+import type { CreateSessionInput } from '@promptia/schemas'
 import type { Message, Session } from '@repo/types'
 import { sanitizeString } from '@repo/utils'
 

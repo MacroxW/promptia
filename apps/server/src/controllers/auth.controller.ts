@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express'
-import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from '@repo/schemas'
+import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from '@promptia/schemas'
 import type { LoginResponse } from '@repo/types'
 
 import { loginUser, registerUser } from '@/services/auth.service'

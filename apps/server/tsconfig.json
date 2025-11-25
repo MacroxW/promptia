@@ -5,7 +5,8 @@
     "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@promptia/schemas": ["../../packages/schemas/src"]
     }
   },
   "include": ["src/**/*"],

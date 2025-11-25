@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import type { CreateMessageInput } from '@repo/schemas'
+import type { CreateMessageInput } from '@promptia/schemas'
 import type { Message } from '@repo/types'
 import { sanitizeString } from '@repo/utils'
 

@@ -10,40 +10,46 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <header>
-          <div className="flex justify-between p-3 self-center">
+        <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
+          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
 
-            <div aria-label="title" className="">
-              <h1 className="text-2xl font-bold">My Web App</h1>
+            <div aria-label="title">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                My Web App
+              </h1>
             </div>
+
             <nav aria-label="navs">
-              <div className="container mx-auto p-4 flex space-x-4">
-                <a href="/" className="">
+              <div className="flex space-x-6">
+                <a href="/" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                   Inicio
                 </a>
-                <a href="/chat" className="">
+                <a href="/chat" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                   Chat
                 </a>
-                <a href="/login" className="">
+                <a href="/login" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                   Login
                 </a>
               </div>
             </nav>
-            <div aria-label="auth">
-              <button>
+
+            <div aria-label="auth" className="flex gap-3">
+              <button className="px-4 py-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors">
                 Login
               </button>
-              <button>
+              <button className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium shadow-sm hover:shadow-md transition-all">
                 Register
               </button>
             </div>
           </div>
         </header>
-        <main>
+
+        <main className="min-h-screen">
           {children}
         </main>
-        <footer>
-          <div className="container mx-auto p-4 text-center text-sm text-gray-500">
+
+        <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
+          <div className="container mx-auto px-6 py-8 text-center text-sm text-gray-600 dark:text-gray-400">
             &copy; {new Date().getFullYear()} My Web App. All rights reserved.
           </div>
         </footer>

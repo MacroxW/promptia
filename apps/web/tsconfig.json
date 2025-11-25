@@ -1,8 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "include": [
     "**/*",
-    "**/.server/**/*",
-    "**/.client/**/*",
     ".react-router/types/**/*"
   ],
   "compilerOptions": {

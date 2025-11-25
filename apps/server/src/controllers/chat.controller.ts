@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express'
-import { createMessageSchema, type CreateMessageInput } from '@repo/schemas'
+import { createMessageSchema, type CreateMessageInput } from '@promptia/schemas'
 
 import { AppError } from '@/middleware/error-handler'
 import { sendChatMessage } from '@/services/chat.service'
