@@ -43,11 +43,13 @@ export async function createSession(data: {
   }
 
   const result = await collection.insertOne(doc)
+  const insertedDoc = await collection.findOne({ _id: result.insertedId })
+  
+  if (!insertedDoc) {
+    throw new AppError('Error al crear sesión', 500)
+  }
 
-  return mapSession({
-    ...doc,
-    _id: result.insertedId
-  } as WithId<SessionDocument>)
+  return mapSession(insertedDoc)
 }
 
 export async function listSessionsByUser(userId: string): Promise<Session[]> {
@@ -71,4 +73,14 @@ export async function updateSessionTimestamp(id: string, date = new Date()): Pro
     { _id: toObjectId(id, 'Sesión') },
     { $set: { updatedAt: date } }
   )
+}
+
+export async function updateSessionTitle(id: string, title: string): Promise<Session | null> {
+  const collection = await getCollection<SessionDocument>('sessions')
+  const result = await collection.findOneAndUpdate(
+    { _id: toObjectId(id, 'Sesión') },
+    { $set: { title, updatedAt: new Date() } },
+    { returnDocument: 'after' }
+  )
+  return result ? mapSession(result) : null
 }

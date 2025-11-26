@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
 import { chatService } from "../services/chat.service";
+import { listMessagesBySession } from "../repositories/message.repository";
+import { generateSessionTitle, updateSession } from "../services/session.service";
+import { findSessionById } from "../repositories/session.repository";
 
 export class ChatController {
   async sendMessage(req: Request, res: Response) {
@@ -59,12 +62,22 @@ export class ChatController {
       }
 
       // Save bot response to DB after streaming is complete
-      // We need to import createMessage or expose a method in chatService to save it.
-      // Since chatService.sendMessage saves it, we should probably add a method to save bot message in service.
-      // For now, let's add a helper in ChatService or just call the repository directly if possible, 
-      // but better to keep it in service. 
-      // Let's add a saveBotMessage method to ChatService.
       await chatService.saveBotMessage(sessionId, fullText);
+
+      // Auto-generate title after 2 messages (1 user + 1 AI = 2 total messages)
+      const messages = await listMessagesBySession(sessionId);
+      const session = await findSessionById(sessionId);
+      
+      // Check if we have exactly 2 messages and the session still has default title
+      if (messages.length === 2 && session && (session.title === "New Chat" || session.title === "Nueva conversación")) {
+        try {
+          const generatedTitle = await generateSessionTitle(sessionId, messages);
+          await updateSession(userId, sessionId, { title: generatedTitle });
+        } catch (error) {
+          console.error("Error auto-generating title:", error);
+          // Don't fail the request if title generation fails
+        }
+      }
 
       res.write(`data: [DONE]\n\n`);
       res.end();

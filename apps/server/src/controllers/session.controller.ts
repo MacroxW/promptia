@@ -1,11 +1,12 @@
 import type { NextFunction, Request, Response } from 'express'
-import { createSessionSchema } from '@promptia/schemas'
+import { createSessionSchema, updateSessionSchema } from '@promptia/schemas'
 import type { Session } from '@repo/types'
 
 import {
   createSession,
   getSessionDetail,
   listUserSessions,
+  updateSession,
   type SessionDetail
 } from '@/services/session.service'
 import { AppError } from '@/middleware/error-handler'
@@ -57,6 +58,23 @@ export async function getSessionController(
       return next(new AppError('No autorizado', 401))
     }
     const session = await getSessionDetail(req.user.id, req.params.id)
+    return res.json(session)
+  } catch (error) {
+    return next(error)
+  }
+}
+
+export async function updateSessionController(
+  req: Request<{ id: string }>,
+  res: Response<Session>,
+  next: NextFunction
+) {
+  try {
+    if (!req.user) {
+      return next(new AppError('No autorizado', 401))
+    }
+    const payload = updateSessionSchema.parse(req.body)
+    const session = await updateSession(req.user.id, req.params.id, payload)
     return res.json(session)
   } catch (error) {
     return next(error)
