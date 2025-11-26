@@ -4,15 +4,36 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@promptia/schemas": ["../../packages/schemas/src"],
-      "@promptia/types": ["../../packages/types/src"],
-      "@promptia/utils": ["./src/utils/src"],
-      "@promptia/database": ["./database/src"],
-      "@promptia/constants": ["../../packages/constants/src"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@promptia/schemas": [
+        "../../packages/schemas/src"
+      ],
+      "@promptia/types": [
+        "../../packages/types/src"
+      ],
+      "@promptia/utils": [
+        "./src/utils/src"
+      ],
+      "@promptia/database": [
+        "./database/src"
+      ],
+      "@promptia/constants": [
+        "../../packages/constants/src"
+      ]
     },
-    "types": ["vitest/globals"]
+    "types": [
+      "vitest/globals"
+    ]
   },
-  "include": ["src/**/*", "tests/**/*", "vitest.config.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "vitest.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

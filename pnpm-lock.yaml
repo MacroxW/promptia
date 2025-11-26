@@ -28,7 +28,11 @@ importers:
         version: link:../../packages/constants
       '@promptia/database':
         specifier: workspace:*
+<<<<<<< HEAD
+        version: link:../../packages/database
+=======
         version: link:database
+>>>>>>> b5a089659e92ad78de3aaf609450efe1e25c575d
       '@promptia/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
@@ -103,12 +107,6 @@ importers:
         specifier: ^4.0.14
         version: 4.0.14(@types/node@20.19.25)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
 
-  apps/server/database:
-    dependencies:
-      mongodb:
-        specifier: ^6.8.0
-        version: 6.21.0
-
   apps/server/src/utils:
     devDependencies:
       typescript:
@@ -178,6 +176,12 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
+
+  packages/database:
+    dependencies:
+      mongodb:
+        specifier: ^6.8.0
+        version: 6.21.0
 
   packages/schemas:
     dependencies:
