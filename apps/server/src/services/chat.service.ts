@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { createMessage } from "@/repositories/message.repository";
 
 export class ChatService {
@@ -20,10 +20,10 @@ export class ChatService {
               name: "get_current_weather",
               description: "Get the current weather in a given location",
               parameters: {
-                type: "OBJECT",
+                type: SchemaType.OBJECT,
                 properties: {
                   location: {
-                    type: "STRING",
+                    type: SchemaType.STRING,
                     description: "The city and state, e.g. San Francisco, CA",
                   },
                 },
@@ -34,10 +34,10 @@ export class ChatService {
               name: "generate_image",
               description: "Generate an image based on a prompt",
               parameters: {
-                type: "OBJECT",
+                type: SchemaType.OBJECT,
                 properties: {
                   prompt: {
-                    type: "STRING",
+                    type: SchemaType.STRING,
                     description: "The description of the image to generate",
                   },
                 },
@@ -109,10 +109,10 @@ export class ChatService {
                 name: "get_current_weather",
                 description: "Get the current weather in a given location",
                 parameters: {
-                  type: "OBJECT",
+                  type: SchemaType.OBJECT,
                   properties: {
                     location: {
-                      type: "STRING",
+                      type: SchemaType.STRING,
                       description: "The city and state, e.g. San Francisco, CA",
                     },
                   },
@@ -123,10 +123,10 @@ export class ChatService {
                 name: "generate_image",
                 description: "Generate an image based on a prompt",
                 parameters: {
-                  type: "OBJECT",
+                  type: SchemaType.OBJECT,
                   properties: {
                     prompt: {
-                      type: "STRING",
+                      type: SchemaType.STRING,
                       description: "The description of the image to generate",
                     },
                   },
@@ -146,7 +146,6 @@ export class ChatService {
       // Add system instruction if provided
       if (systemPrompt) {
         modelConfig.systemInstruction = {
-          role: "user",
           parts: [{ text: systemPrompt }]
         };
       }
@@ -173,8 +172,9 @@ export class ChatService {
 
     for await (const chunk of result.stream) {
       const chunkText = chunk.text();
-      // Check for function call
-      let calls;
+
+      // Check for function call - works with both old and new SDK versions
+      let calls = chunk.functionCalls;
       if (typeof chunk.functionCalls === 'function') {
         calls = chunk.functionCalls();
       }
@@ -190,7 +190,6 @@ export class ChatService {
     }
 
     if (functionCall) {
-      console.log("Executing tool:", functionCall.name, functionCall.args);
       const toolResult = await this.executeTool(functionCall.name, functionCall.args);
 
       result = await chat.sendMessageStream([
@@ -205,10 +204,20 @@ export class ChatService {
         }
       ]);
 
+      let geminiResponse = "";
       for await (const chunk of result.stream) {
         const chunkText = chunk.text();
         if (chunkText) {
+          geminiResponse += chunkText;
           yield { text: chunkText };
+        }
+      }
+      
+      // If it was an image generation and Gemini didn't include the markdown, append it
+      if (functionCall.name === "generate_image" && typeof toolResult === 'object' && toolResult.markdown) {
+        // Check if Gemini already included the markdown in its response
+        if (!geminiResponse.includes(toolResult.markdown)) {
+          yield { text: "\n\n" + toolResult.markdown };
         }
       }
     }
@@ -225,8 +234,12 @@ export class ChatService {
       const prompt = args.prompt;
       const encodedPrompt = encodeURIComponent(prompt);
       const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
-      // Return markdown image
-      return `![Generated Image](${imageUrl})`;
+      // Return the image URL in a structured format that Gemini will use
+      return { 
+        imageUrl: imageUrl,
+        markdown: `![Generated Image](${imageUrl})`,
+        message: "Image generated successfully. Please display the image using the provided markdown."
+      };
     }
     return { error: "Unknown tool" };
   }
