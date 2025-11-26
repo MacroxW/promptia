@@ -106,12 +106,18 @@ export class ChatService {
       // Get conversation history (excluding the current message we just saved)
       const allMessages = await messageRepository.listBySession(sessionId);
       const previousMessages = allMessages.slice(0, -1); // Exclude the last message (current one)
-      
-      // Convert to Gemini history format
-      const history = previousMessages.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content }]
-      }));
+
+      // If there's a custom system prompt, start fresh without history
+      // This ensures the system prompt is fully respected
+      let history: any[] = [];
+
+      if (!systemPrompt && previousMessages.length > 0) {
+        // Only use history if there's no custom system prompt
+        history = previousMessages.map(msg => ({
+          role: msg.role === 'user' ? 'user' : 'model',
+          parts: [{ text: msg.content }]
+        }));
+      }
 
       const model = this.genAI.getGenerativeModel(modelConfig);
       const chat = model.startChat({ history });
@@ -168,7 +174,7 @@ export class ChatService {
           yield { text: chunkText };
         }
       }
-      
+
       if (functionCall.name === "generate_image" && typeof toolResult === 'object' && toolResult.markdown) {
         if (!geminiResponse.includes(toolResult.markdown)) {
           yield { text: "\n\n" + toolResult.markdown };
@@ -179,17 +185,25 @@ export class ChatService {
 
   async executeTool(name: string, args: any) {
     if (name === "get_current_weather") {
+
       const location = args.location;
       const weathers = ["Sunny", "Cloudy", "Rainy", "Snowy"];
       const temp = Math.floor(Math.random() * 30) + 10;
       const condition = weathers[Math.floor(Math.random() * weathers.length)];
-      return { weather: condition, temperature: temp, location: location, unit: "celsius" };
+
+      return {
+        weather: condition,
+        temperature: temp,
+        location: location,
+        unit: "celsius"
+      };
+
     } else if (name === "generate_image") {
       const prompt = args.prompt;
       const encodedPrompt = encodeURIComponent(prompt);
       const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
-      // Return the image URL in a structured format that Gemini will use
-      return { 
+
+      return {
         imageUrl: imageUrl,
         markdown: `![Generated Image](${imageUrl})`,
         message: "Image generated successfully. Please display the image using the provided markdown."
