@@ -23,19 +23,19 @@ importers:
       '@google/generative-ai':
         specifier: ^0.24.1
         version: 0.24.1
+      '@promptia/constants':
+        specifier: workspace:*
+        version: link:../../packages/constants
+      '@promptia/database':
+        specifier: workspace:*
+        version: link:database
       '@promptia/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
-      '@repo/constants':
-        specifier: workspace:*
-        version: link:../../packages/constants
-      '@repo/database':
-        specifier: workspace:*
-        version: link:database
-      '@repo/types':
+      '@promptia/types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@repo/utils':
+      '@promptia/utils':
         specifier: workspace:*
         version: link:src/utils
       bcryptjs:
