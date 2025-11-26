@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { registerSchema, type RegisterInput } from '@promptia/schemas'
-import { registerService } from "~/services/auth.service";
+import { useAuth } from "~/hooks/useAuth";
 import { Input } from "../components/Input";
 
 const RegisterPage = () => {
+    const { register, isLoading, error } = useAuth();
 
     const [formValues, setFormValues] = useState<RegisterInput>({
         email: '',
@@ -18,18 +19,7 @@ const RegisterPage = () => {
     const handleSubmit = async () => {
         try {
             await registerSchema.parseAsync(formValues)
-
-            const data = await registerService(formValues)
-            // Assuming the backend returns a token on registration, or we redirect to login
-            // If it returns a token:
-            if (data.token) {
-                localStorage.setItem("token", data.token)
-                window.location.href = "/"
-            } else {
-                // If no token, maybe redirect to login
-                window.location.href = "/login"
-            }
-
+            await register(formValues)
         } catch (error) {
             if (error instanceof Error) {
                 alert(error.message)

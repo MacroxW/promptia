@@ -1,44 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { loginSchema, type LoginInput } from '@promptia/schemas'
-import { loginService } from "~/services/auth.service";
+import { useAuth } from "~/hooks/useAuth";
 import { Input } from "../components/Input";
-import { useNavigate } from "react-router";
 
 const LoginPage = () => {
-    const navigate = useNavigate();
+    const { login, isLoading, error } = useAuth();
 
     const [formValues, setFormValues] = useState<LoginInput>({
-        email: 'user@gmail.com',
-        password: 'password12345'
+        email: '',
+        password: ''
     })
 
     const setValue = (key: keyof LoginInput, val: string) => {
         setFormValues({ ...formValues, [key]: val })
     }
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            navigate("/chat", { replace: true });
-        }
-    }, [navigate]);
-
-
     const handleSubmit = async () => {
         try {
             await loginSchema.parseAsync(formValues)
-
-            const data = await loginService(formValues)
-            localStorage.setItem("token", data.token)
-            window.dispatchEvent(new Event("auth-change"))
-            navigate("/chat", { replace: true })
-
+            await login(formValues)
         } catch (error) {
-            alert("Formato de datos incorrecto o credenciales inválidas")
-            console.log("Error de validacion", error)
+            if (error instanceof Error) {
+                alert(error.message)
+            } else {
+                alert("Error en el login")
+            }
+            console.log("Error de validacion o login", error)
         }
     }
-
 
     return (
         <div className="container mx-auto px-6 py-12 flex items-center justify-center min-h-[80vh]">
