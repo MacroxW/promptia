@@ -15,68 +15,72 @@ type SessionListResponse = {
   sessions: Session[]
 }
 
-export async function listSessionsController(
-  req: Request,
-  res: Response<SessionListResponse>,
-  next: NextFunction
-) {
-  try {
-    if (!req.user) {
-      return next(new AppError('No autorizado', 401))
+export class SessionController {
+  async listSessions(
+    req: Request,
+    res: Response<SessionListResponse>,
+    next: NextFunction
+  ) {
+    try {
+      if (!req.user) {
+        return next(new AppError('No autorizado', 401))
+      }
+      const sessions = await listUserSessions(req.user.id)
+      return res.json({ sessions })
+    } catch (error) {
+      return next(error)
     }
-    const sessions = await listUserSessions(req.user.id)
-    return res.json({ sessions })
-  } catch (error) {
-    return next(error)
+  }
+
+  async createSession(
+    req: Request,
+    res: Response<Session>,
+    next: NextFunction
+  ) {
+    try {
+      if (!req.user) {
+        return next(new AppError('No autorizado', 401))
+      }
+      const payload = createSessionSchema.parse(req.body)
+      const session = await createSession(req.user.id, payload)
+      return res.status(201).json(session)
+    } catch (error) {
+      return next(error)
+    }
+  }
+
+  async getSession(
+    req: Request<{ id: string }>,
+    res: Response<SessionDetail>,
+    next: NextFunction
+  ) {
+    try {
+      if (!req.user) {
+        return next(new AppError('No autorizado', 401))
+      }
+      const session = await getSessionDetail(req.user.id, req.params.id)
+      return res.json(session)
+    } catch (error) {
+      return next(error)
+    }
+  }
+
+  async updateSession(
+    req: Request<{ id: string }>,
+    res: Response<Session>,
+    next: NextFunction
+  ) {
+    try {
+      if (!req.user) {
+        return next(new AppError('No autorizado', 401))
+      }
+      const payload = updateSessionSchema.parse(req.body)
+      const session = await updateSession(req.user.id, req.params.id, payload)
+      return res.json(session)
+    } catch (error) {
+      return next(error)
+    }
   }
 }
 
-export async function createSessionController(
-  req: Request,
-  res: Response<Session>,
-  next: NextFunction
-) {
-  try {
-    if (!req.user) {
-      return next(new AppError('No autorizado', 401))
-    }
-    const payload = createSessionSchema.parse(req.body)
-    const session = await createSession(req.user.id, payload)
-    return res.status(201).json(session)
-  } catch (error) {
-    return next(error)
-  }
-}
-
-export async function getSessionController(
-  req: Request<{ id: string }>,
-  res: Response<SessionDetail>,
-  next: NextFunction
-) {
-  try {
-    if (!req.user) {
-      return next(new AppError('No autorizado', 401))
-    }
-    const session = await getSessionDetail(req.user.id, req.params.id)
-    return res.json(session)
-  } catch (error) {
-    return next(error)
-  }
-}
-
-export async function updateSessionController(
-  req: Request<{ id: string }>,
-  res: Response<Session>,
-  next: NextFunction
-) {
-  try {
-    if (!req.user) {
-      return next(new AppError('No autorizado', 401))
-    }
-    const payload = updateSessionSchema.parse(req.body)
-    const session = await updateSession(req.user.id, req.params.id, payload)
-    return res.json(session)
-  } catch (error) {
-    return next(error)
-  }
-}
+export const sessionController = new SessionController()

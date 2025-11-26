@@ -1,10 +1,9 @@
 import { Router, type Router as ExpressRouter } from 'express'
-
-import { loginController, registerController } from '@/controllers/auth.controller'
+import { authController } from '@/controllers/auth.controller'
 
 const router: ExpressRouter = Router()
 
-router.post('/register', registerController)
-router.post('/login', loginController)
+router.post('/register', authController.register.bind(authController))
+router.post('/login', authController.login.bind(authController))
 
 export default router

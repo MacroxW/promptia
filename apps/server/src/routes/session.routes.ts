@@ -1,17 +1,11 @@
 import { Router, type Router as ExpressRouter } from 'express'
-
-import {
-  createSessionController,
-  getSessionController,
-  listSessionsController,
-  updateSessionController
-} from '@/controllers/session.controller'
+import { sessionController } from '@/controllers/session.controller'
 
 const router: ExpressRouter = Router()
 
-router.get('/', listSessionsController)
-router.post('/', createSessionController)
-router.get('/:id', getSessionController)
-router.patch('/:id', updateSessionController)
+router.get('/', sessionController.listSessions.bind(sessionController))
+router.post('/', sessionController.createSession.bind(sessionController))
+router.get('/:id', sessionController.getSession.bind(sessionController))
+router.patch('/:id', sessionController.updateSession.bind(sessionController))
 
 export default router
