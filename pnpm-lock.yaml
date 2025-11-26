@@ -28,7 +28,11 @@ importers:
         version: link:../../packages/constants
       '@promptia/database':
         specifier: workspace:*
+<<<<<<< HEAD
         version: link:../../packages/database
+=======
+        version: link:database
+>>>>>>> b5a089659e92ad78de3aaf609450efe1e25c575d
       '@promptia/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas

@@ -103,8 +103,18 @@ export class ChatService {
         };
       }
 
+      // Get conversation history (excluding the current message we just saved)
+      const allMessages = await messageRepository.listBySession(sessionId);
+      const previousMessages = allMessages.slice(0, -1); // Exclude the last message (current one)
+      
+      // Convert to Gemini history format
+      const history = previousMessages.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }]
+      }));
+
       const model = this.genAI.getGenerativeModel(modelConfig);
-      const chat = model.startChat({ history: [] });
+      const chat = model.startChat({ history });
 
       return this.handleStreamWithTools(chat, message);
     } catch (error) {

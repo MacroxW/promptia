@@ -22,8 +22,11 @@ app.use(errorHandler)
 
 const PORT = env.port
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
-})
+// Solo iniciar servidor si no estamos en modo test
+if (process.env.NODE_ENV !== 'test' && process.env.VITEST !== 'true') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`)
+  })
+}
 
 export { app }
