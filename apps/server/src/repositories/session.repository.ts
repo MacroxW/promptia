@@ -19,8 +19,7 @@ export class SessionRepository {
       title: doc.title,
       userId: doc.userId.toHexString(),
       createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-      messages: []
+      updatedAt: doc.updatedAt
     }
   }
 
