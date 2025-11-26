@@ -49,7 +49,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   onClick={logout}
                   className="px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors"
                 >
-                  Logout
+                  Cerrar Sesión
                 </button>
               ) : (
                 <>
