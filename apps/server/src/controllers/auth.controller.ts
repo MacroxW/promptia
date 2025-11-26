@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from 'express'
 import { loginSchema, registerSchema } from '@promptia/schemas'
 import type { LoginResponse } from '@repo/types'
 
-import { loginUser, registerUser } from '@/services/auth.service'
+import { authService } from '@/services/auth.service'
 
 export class AuthController {
   async register(
@@ -12,7 +12,7 @@ export class AuthController {
   ) {
     try {
       const payload = registerSchema.parse(req.body)
-      const result = await registerUser(payload)
+      const result = await authService.register(payload)
       return res.status(201).json(result)
     } catch (error) {
       return next(error)
@@ -26,7 +26,7 @@ export class AuthController {
   ) {
     try {
       const payload = loginSchema.parse(req.body)
-      const result = await loginUser(payload)
+      const result = await authService.login(payload)
       return res.status(200).json(result)
     } catch (error) {
       return next(error)

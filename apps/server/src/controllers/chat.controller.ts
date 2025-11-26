@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { sendMessageSchema, streamMessageSchema } from "@promptia/schemas";
 import { chatService } from "../services/chat.service";
 import { messageRepository } from "../repositories/message.repository";
-import { generateSessionTitle, updateSession } from "../services/session.service";
+import { sessionService } from "../services/session.service";
 import { sessionRepository } from "../repositories/session.repository";
 import { AppError } from "../middleware/error-handler";
 
@@ -61,8 +61,8 @@ export class ChatController {
       // Check if we have exactly 2 messages and the session still has default title
       if (messages.length === 2 && session && (session.title === "New Chat" || session.title === "Nueva conversación")) {
         try {
-          const generatedTitle = await generateSessionTitle(payload.sessionId, messages);
-          await updateSession(req.user.id, payload.sessionId, { title: generatedTitle });
+          const generatedTitle = await sessionService.generateTitle(payload.sessionId, messages);
+          await sessionService.update(req.user.id, payload.sessionId, { title: generatedTitle });
         } catch (error) {
           console.error("Error auto-generating title:", error);
         }

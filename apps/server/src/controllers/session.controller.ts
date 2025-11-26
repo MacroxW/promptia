@@ -3,10 +3,7 @@ import { createSessionSchema, updateSessionSchema } from '@promptia/schemas'
 import type { Session } from '@repo/types'
 
 import {
-  createSession,
-  getSessionDetail,
-  listUserSessions,
-  updateSession,
+  sessionService,
   type SessionDetail
 } from '@/services/session.service'
 import { AppError } from '@/middleware/error-handler'
@@ -25,7 +22,7 @@ export class SessionController {
       if (!req.user) {
         return next(new AppError('No autorizado', 401))
       }
-      const sessions = await listUserSessions(req.user.id)
+      const sessions = await sessionService.listByUser(req.user.id)
       return res.json({ sessions })
     } catch (error) {
       return next(error)
@@ -42,7 +39,7 @@ export class SessionController {
         return next(new AppError('No autorizado', 401))
       }
       const payload = createSessionSchema.parse(req.body)
-      const session = await createSession(req.user.id, payload)
+      const session = await sessionService.create(req.user.id, payload)
       return res.status(201).json(session)
     } catch (error) {
       return next(error)
@@ -58,7 +55,7 @@ export class SessionController {
       if (!req.user) {
         return next(new AppError('No autorizado', 401))
       }
-      const session = await getSessionDetail(req.user.id, req.params.id)
+      const session = await sessionService.getDetail(req.user.id, req.params.id)
       return res.json(session)
     } catch (error) {
       return next(error)
@@ -75,7 +72,7 @@ export class SessionController {
         return next(new AppError('No autorizado', 401))
       }
       const payload = updateSessionSchema.parse(req.body)
-      const session = await updateSession(req.user.id, req.params.id, payload)
+      const session = await sessionService.update(req.user.id, req.params.id, payload)
       return res.json(session)
     } catch (error) {
       return next(error)
