@@ -77,7 +77,13 @@ export class ChatService {
     }
   }
 
-  async streamMessage(userId: string, sessionId: string, message: string) {
+  async streamMessage(
+    userId: string,
+    sessionId: string,
+    message: string,
+    systemPrompt?: string,
+    temperature?: number
+  ) {
     try {
       // Save user message
       await createMessage({
@@ -86,7 +92,70 @@ export class ChatService {
         content: message
       });
 
-      const chat = this.model.startChat({
+      // Build generation config
+      const generationConfig: any = {};
+
+      if (temperature !== undefined) {
+        generationConfig.temperature = temperature;
+      }
+
+      // Build model config
+      const modelConfig: any = {
+        model: "gemini-2.5-flash",
+        tools: [
+          {
+            functionDeclarations: [
+              {
+                name: "get_current_weather",
+                description: "Get the current weather in a given location",
+                parameters: {
+                  type: "OBJECT",
+                  properties: {
+                    location: {
+                      type: "STRING",
+                      description: "The city and state, e.g. San Francisco, CA",
+                    },
+                  },
+                  required: ["location"],
+                },
+              },
+              {
+                name: "generate_image",
+                description: "Generate an image based on a prompt",
+                parameters: {
+                  type: "OBJECT",
+                  properties: {
+                    prompt: {
+                      type: "STRING",
+                      description: "The description of the image to generate",
+                    },
+                  },
+                  required: ["prompt"],
+                },
+              },
+            ],
+          },
+        ],
+      };
+
+      // Add generation config if we have temperature
+      if (Object.keys(generationConfig).length > 0) {
+        modelConfig.generationConfig = generationConfig;
+      }
+
+      // Add system instruction if provided
+      if (systemPrompt) {
+        modelConfig.systemInstruction = {
+          role: "user",
+          parts: [{ text: systemPrompt }]
+        };
+      }
+
+      // Create a new model instance with custom config
+      const model = this.genAI.getGenerativeModel(modelConfig);
+
+      // Start chat without system instruction in history
+      const chat = model.startChat({
         history: [],
       });
 

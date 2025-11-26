@@ -10,6 +10,8 @@ export const useChat = (initialSessionId?: string) => {
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [currentSessionId, setCurrentSessionId] = useState<string>(initialSessionId || "");
+    const [systemPrompt, setSystemPrompt] = useState<string>("");
+    const [temperature, setTemperature] = useState<number>(0.7);
     const abortControllerRef = useRef<AbortController | null>(null);
 
     useEffect(() => {
@@ -66,7 +68,9 @@ export const useChat = (initialSessionId?: string) => {
                 },
                 body: JSON.stringify({
                     message: userMessage,
-                    sessionId: currentSessionId
+                    sessionId: currentSessionId,
+                    systemPrompt: systemPrompt || undefined,
+                    temperature: temperature
                 }),
                 signal: abortControllerRef.current.signal
             });
@@ -143,6 +147,10 @@ export const useChat = (initialSessionId?: string) => {
         isLoading,
         currentSessionId,
         setCurrentSessionId,
-        handleSend
+        handleSend,
+        systemPrompt,
+        setSystemPrompt,
+        temperature,
+        setTemperature
     };
 };

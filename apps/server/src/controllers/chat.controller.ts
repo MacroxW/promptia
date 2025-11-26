@@ -24,7 +24,7 @@ export class ChatController {
   }
   async streamMessage(req: Request, res: Response) {
     try {
-      const { message, sessionId } = req.body;
+      const { message, sessionId, systemPrompt, temperature } = req.body;
       const userId = (req as any).user?.id;
 
       if (!userId) {
@@ -40,7 +40,13 @@ export class ChatController {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      const stream = await chatService.streamMessage(userId, sessionId, message);
+      const stream = await chatService.streamMessage(
+        userId,
+        sessionId,
+        message,
+        systemPrompt,
+        temperature
+      );
       let fullText = "";
 
       for await (const chunk of stream) {
