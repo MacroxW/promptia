@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { env } from '@/config/env'
-import { createUser, findUserByEmail, deleteUser } from '@/repositories/user.repository'
+import { userRepository } from '@/repositories/user.repository'
 
 async function seed() {
     try {
@@ -8,15 +8,15 @@ async function seed() {
         const password = 'password12345'
         const name = 'Default User'
 
-        const existingUser = await findUserByEmail(email)
+        const existingUser = await userRepository.findByEmail(email)
 
         if (existingUser) {
             console.log('User already exists, deleting...')
-            await deleteUser(email)
+            await userRepository.delete(email)
         }
 
         const hashedPassword = await bcrypt.hash(password, env.bcryptSaltRounds)
-        await createUser({
+        await userRepository.create({
             email,
             password: hashedPassword,
             name

@@ -1,13 +1,20 @@
 import { vi } from 'vitest';
+import { config } from 'dotenv';
+import path from 'path';
+
+// Load test environment variables from .env.test
+config({ path: path.resolve(__dirname, '../.env.test') });
 
 // Global test setup
 beforeAll(() => {
-  // Setup code that runs before all tests
-  process.env.NODE_ENV = 'test';
-  process.env.JWT_SECRET = 'test-secret-key-for-testing-only';
-  process.env.JWT_EXPIRES_IN = '1h';
-  process.env.BCRYPT_SALT_ROUNDS = '10';
-  process.env.GEMINI_API_KEY = 'test-gemini-api-key';
+  // Verify test environment is loaded
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Tests must run with NODE_ENV=test');
+  }
+  
+  if (process.env.MONGODB_DB !== 'promptia_test_db') {
+    throw new Error('Tests must use promptia_test_db database');
+  }
 });
 
 afterAll(() => {

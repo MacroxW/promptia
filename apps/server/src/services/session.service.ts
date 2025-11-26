@@ -64,13 +64,20 @@ export class SessionService {
 
   async generateTitle(sessionId: string, messages: Message[]): Promise<string> {
     try {
-      const apiKey = process.env.GEMINI_API_KEY
+      const apiKey = process.env.GEMINI_API_KEY_2
       if (!apiKey) {
         throw new Error("GEMINI_API_KEY is not defined")
       }
 
       const genAI = new GoogleGenerativeAI(apiKey)
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" })
+      // Use gemini-1.5-flash instead of 2.0-flash-exp for better rate limits
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash-lite",
+        generationConfig: {
+          temperature: 0.3, // Lower temperature for more consistent titles
+          maxOutputTokens: 20, // Short titles only
+        }
+      })
 
       const conversationContext = messages
         .slice(0, 4)
@@ -97,6 +104,12 @@ Título:`
       return title || 'Nueva conversación'
     } catch (error) {
       console.error('Error generating session title:', error)
+
+      // If it's a rate limit error, return a default title
+      if (error && typeof error === 'object' && 'status' in error && error.status === 429) {
+        console.warn('Rate limit exceeded for title generation, using default title')
+      }
+
       return 'Nueva conversación'
     }
   }
