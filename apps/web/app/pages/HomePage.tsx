@@ -26,14 +26,14 @@ export const HomePage = () => {
                 <FeatureCard
                     icon="💬"
                     title="Chat en tiempo real"
-                    description="Comunicate al instante con nuestro sistema de chat inteligente"
+                    description="Comunicacion con un agente util y personal"
                     iconBgClass="bg-blue-100 dark:bg-blue-900"
                 />
 
                 <FeatureCard
                     icon="🔒"
                     title="Autenticación segura"
-                    description="Tu datos estan protegidos con prácticas modernas de seguridad"
+                    description="JWT Super secreto!"
                     iconBgClass="bg-purple-100 dark:bg-purple-900"
                 />
             </div>
