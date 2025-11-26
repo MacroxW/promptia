@@ -26,13 +26,13 @@ const ChatPage = () => {
     }, []);
 
     return (
-        <div className="flex h-[calc(100vh-64px)]">
+        <div className="flex h-[calc(100vh-64px)] overflow-hidden">
             <Sidebar
                 currentSessionId={currentSessionId}
                 onSessionSelect={setCurrentSessionId}
             />
 
-            <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-900">
+            <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-900 overflow-hidden">
                 {/* Header */}
                 <div className="bg-white dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700 shadow-sm">
                     <h1 className="text-xl font-bold text-gray-800 dark:text-white">Chat</h1>
