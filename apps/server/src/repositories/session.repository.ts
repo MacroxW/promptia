@@ -5,7 +5,7 @@ import type { Session } from '@repo/types'
 import { AppError } from '@/middleware/error-handler'
 
 type SessionDocument = {
-  _id: ObjectId
+  _id?: ObjectId
   title: string
   userId: ObjectId
   createdAt: Date

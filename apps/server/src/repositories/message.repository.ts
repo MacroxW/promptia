@@ -5,7 +5,7 @@ import type { Message, MessageRole } from '@repo/types'
 import { AppError } from '@/middleware/error-handler'
 
 type MessageDocument = {
-  _id: ObjectId
+  _id?: ObjectId
   sessionId: ObjectId
   role: MessageRole
   content: string
@@ -43,11 +43,13 @@ export async function createMessage(data: {
   }
 
   const result = await collection.insertOne(doc)
+  const insertedDoc = await collection.findOne({ _id: result.insertedId })
+  
+  if (!insertedDoc) {
+    throw new AppError('Error al crear mensaje', 500)
+  }
 
-  return mapMessage({
-    ...doc,
-    _id: result.insertedId
-  } as WithId<MessageDocument>)
+  return mapMessage(insertedDoc)
 }
 
 export async function listMessagesBySession(

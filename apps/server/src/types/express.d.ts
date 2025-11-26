@@ -3,8 +3,10 @@ export type RequestUser = {
   email: string
 }
 
-declare module 'express-serve-static-core' {
-  interface Request {
-    user?: RequestUser
+declare global {
+  namespace Express {
+    interface Request {
+      user?: RequestUser
+    }
   }
 }

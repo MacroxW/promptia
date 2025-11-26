@@ -1,69 +1,66 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { createMessage } from "@/repositories/message.repository";
+import { AppError } from "@/middleware/error-handler";
 
 export class ChatService {
   private genAI: GoogleGenerativeAI;
-  private model: any;
+  private readonly DEFAULT_MODEL = "gemini-2.5-flash";
+  private readonly FUNCTION_DECLARATIONS: any[] = [
+    {
+      name: "get_current_weather",
+      description: "Get the current weather in a given location",
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          location: {
+            type: SchemaType.STRING,
+            description: "The city and state, e.g. San Francisco, CA",
+          },
+        },
+        required: ["location"],
+      },
+    },
+    {
+      name: "generate_image",
+      description: "Generate an image based on a prompt",
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          prompt: {
+            type: SchemaType.STRING,
+            description: "The description of the image to generate",
+          },
+        },
+        required: ["prompt"],
+      },
+    },
+  ];
 
   constructor() {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      throw new Error("GEMINI_API_KEY is not defined in environment variables");
+      throw new AppError("GEMINI_API_KEY no está configurada", 500);
     }
     this.genAI = new GoogleGenerativeAI(apiKey);
-    this.model = this.genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-      tools: [
-        {
-          functionDeclarations: [
-            {
-              name: "get_current_weather",
-              description: "Get the current weather in a given location",
-              parameters: {
-                type: SchemaType.OBJECT,
-                properties: {
-                  location: {
-                    type: SchemaType.STRING,
-                    description: "The city and state, e.g. San Francisco, CA",
-                  },
-                },
-                required: ["location"],
-              },
-            },
-            {
-              name: "generate_image",
-              description: "Generate an image based on a prompt",
-              parameters: {
-                type: SchemaType.OBJECT,
-                properties: {
-                  prompt: {
-                    type: SchemaType.STRING,
-                    description: "The description of the image to generate",
-                  },
-                },
-                required: ["prompt"],
-              },
-            },
-          ],
-        },
-      ],
-    });
   }
 
   async sendMessage(userId: string, sessionId: string, message: string): Promise<string> {
     try {
-      // Save user message
       await createMessage({
         sessionId,
         role: "user",
         content: message
       });
 
-      const result = await this.model.generateContent(message);
+      const model = this.genAI.getGenerativeModel({
+        model: this.DEFAULT_MODEL,
+        tools: [{ functionDeclarations: this.FUNCTION_DECLARATIONS }],
+      });
+
+      const result = await model.generateContent(message);
       const response = await result.response;
       const text = response.text();
 
-      // Save bot response
       await createMessage({
         sessionId,
         role: "agent",
@@ -73,7 +70,7 @@ export class ChatService {
       return text;
     } catch (error) {
       console.error("Error communicating with Gemini API:", error);
-      throw new Error("Failed to get response from AI");
+      throw new AppError("Error al comunicarse con la IA", 500);
     }
   }
 
@@ -85,95 +82,44 @@ export class ChatService {
     temperature?: number
   ) {
     try {
-      // Save user message
       await createMessage({
         sessionId,
         role: "user",
         content: message
       });
 
-      // Build generation config
-      const generationConfig: any = {};
-
-      if (temperature !== undefined) {
-        generationConfig.temperature = temperature;
-      }
-
-      // Build model config
       const modelConfig: any = {
-        model: "gemini-2.5-flash",
-        tools: [
-          {
-            functionDeclarations: [
-              {
-                name: "get_current_weather",
-                description: "Get the current weather in a given location",
-                parameters: {
-                  type: SchemaType.OBJECT,
-                  properties: {
-                    location: {
-                      type: SchemaType.STRING,
-                      description: "The city and state, e.g. San Francisco, CA",
-                    },
-                  },
-                  required: ["location"],
-                },
-              },
-              {
-                name: "generate_image",
-                description: "Generate an image based on a prompt",
-                parameters: {
-                  type: SchemaType.OBJECT,
-                  properties: {
-                    prompt: {
-                      type: SchemaType.STRING,
-                      description: "The description of the image to generate",
-                    },
-                  },
-                  required: ["prompt"],
-                },
-              },
-            ],
-          },
-        ],
+        model: this.DEFAULT_MODEL,
+        tools: [{ functionDeclarations: this.FUNCTION_DECLARATIONS }],
       };
 
-      // Add generation config if we have temperature
-      if (Object.keys(generationConfig).length > 0) {
-        modelConfig.generationConfig = generationConfig;
+      if (temperature !== undefined) {
+        modelConfig.generationConfig = { temperature };
       }
 
-      // Add system instruction if provided
       if (systemPrompt) {
         modelConfig.systemInstruction = {
           parts: [{ text: systemPrompt }]
         };
       }
 
-      // Create a new model instance with custom config
       const model = this.genAI.getGenerativeModel(modelConfig);
-
-      // Start chat without system instruction in history
-      const chat = model.startChat({
-        history: [],
-      });
+      const chat = model.startChat({ history: [] });
 
       return this.handleStreamWithTools(chat, message);
     } catch (error) {
       console.error("Error communicating with Gemini API:", error);
-      throw new Error("Failed to get response from AI");
+      throw new AppError("Error al comunicarse con la IA", 500);
     }
   }
 
   async *handleStreamWithTools(chat: any, message: string): AsyncGenerator<any, void, unknown> {
     let result = await chat.sendMessageStream(message);
-
     let functionCall = null;
 
     for await (const chunk of result.stream) {
       const chunkText = chunk.text();
 
-      // Check for function call - works with both old and new SDK versions
       let calls = chunk.functionCalls;
       if (typeof chunk.functionCalls === 'function') {
         calls = chunk.functionCalls();
@@ -213,9 +159,7 @@ export class ChatService {
         }
       }
       
-      // If it was an image generation and Gemini didn't include the markdown, append it
       if (functionCall.name === "generate_image" && typeof toolResult === 'object' && toolResult.markdown) {
-        // Check if Gemini already included the markdown in its response
         if (!geminiResponse.includes(toolResult.markdown)) {
           yield { text: "\n\n" + toolResult.markdown };
         }
