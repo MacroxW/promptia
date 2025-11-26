@@ -1,6 +1,6 @@
 import type { CreateSessionInput, UpdateSessionInput } from '@promptia/schemas'
-import type { Message, Session } from '@repo/types'
-import { sanitizeString } from '@repo/utils'
+import type { Message, Session } from '@promptia/types'
+import { sanitizeString } from '@promptia/utils'
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
 import { AppError } from '@/middleware/error-handler'

@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import type { LoginInput, RegisterInput } from '@promptia/schemas'
-import type { LoginResponse } from '@repo/types'
-import { sanitizeEmail } from '@repo/utils'
+import type { LoginResponse } from '@promptia/types'
+import { sanitizeEmail } from '@promptia/utils'
 
 import { env } from '@/config/env'
 import { AppError } from '@/middleware/error-handler'

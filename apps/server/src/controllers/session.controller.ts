@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 import { createSessionSchema, updateSessionSchema } from '@promptia/schemas'
-import type { Session } from '@repo/types'
+import type { Session } from '@promptia/types'
 
 import {
   sessionService,

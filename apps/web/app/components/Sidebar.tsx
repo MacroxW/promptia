@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 interface Session {
     id: string;
@@ -20,19 +20,7 @@ export const Sidebar = ({ currentSessionId, onSessionSelect }: SidebarProps) => 
     const [editTitle, setEditTitle] = useState("");
     const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchSessions();
-    }, []);
-
-    useEffect(() => {
-        // Refresh sessions every 2 seconds to catch auto-generated titles
-        const interval = setInterval(() => {
-            fetchSessions();
-        }, 2000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const fetchSessions = async () => {
+    const fetchSessions = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
             const response = await fetch("http://localhost:4000/api/sessions", {
@@ -52,7 +40,19 @@ export const Sidebar = ({ currentSessionId, onSessionSelect }: SidebarProps) => 
         } catch (error) {
             console.error("Error fetching sessions:", error);
         }
-    };
+    }, [currentSessionId, onSessionSelect]);
+
+    useEffect(() => {
+        fetchSessions();
+    }, [fetchSessions]);
+
+    useEffect(() => {
+        // Refresh sessions every 2 seconds to catch auto-generated titles
+        const interval = setInterval(() => {
+            fetchSessions();
+        }, 2000);
+        return () => clearInterval(interval);
+    }, [fetchSessions]);
 
     const handleNewChat = async () => {
         try {

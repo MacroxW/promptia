@@ -1,9 +1,13 @@
 import { Sidebar } from "../components/Sidebar";
 import { useChat } from "../hooks/useChat";
 import ReactMarkdown from "react-markdown";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
+import { useNavigate, useParams } from "react-router";
 
 const ChatPage = () => {
+    const { sessionId } = useParams<{ sessionId?: string }>();
+    const navigate = useNavigate();
+
     const {
         messages,
         input,
@@ -16,7 +20,24 @@ const ChatPage = () => {
         setSystemPrompt,
         temperature,
         setTemperature
-    } = useChat();
+    } = useChat(sessionId);
+
+    const handleSessionSelect = useCallback((id: string) => {
+        setCurrentSessionId(id);
+        navigate(`/chat/${id}`);
+    }, [navigate, setCurrentSessionId]);
+
+    useEffect(() => {
+        if (sessionId && sessionId !== currentSessionId) {
+            setCurrentSessionId(sessionId);
+        }
+    }, [sessionId, currentSessionId, setCurrentSessionId]);
+
+    useEffect(() => {
+        if (!sessionId && currentSessionId) {
+            navigate(`/chat/${currentSessionId}`, { replace: true });
+        }
+    }, [sessionId, currentSessionId, navigate]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -29,7 +50,7 @@ const ChatPage = () => {
         <div className="flex h-[calc(100vh-64px)] overflow-hidden">
             <Sidebar
                 currentSessionId={currentSessionId}
-                onSessionSelect={setCurrentSessionId}
+                onSessionSelect={handleSessionSelect}
             />
 
             <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-900 overflow-hidden">

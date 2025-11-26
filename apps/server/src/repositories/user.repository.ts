@@ -1,6 +1,6 @@
 import { ObjectId, WithId } from 'mongodb'
-import { getCollection } from '@repo/database'
-import type { User } from '@repo/types'
+import { getCollection } from '@promptia/database'
+import type { User } from '@promptia/types'
 
 export type UserDocument = {
   _id?: ObjectId

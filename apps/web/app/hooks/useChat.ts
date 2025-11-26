@@ -15,6 +15,13 @@ export const useChat = (initialSessionId?: string) => {
     const abortControllerRef = useRef<AbortController | null>(null);
 
     useEffect(() => {
+        // Keep the selected session in sync with the URL parameter when it changes
+        if (initialSessionId && initialSessionId !== currentSessionId) {
+            setCurrentSessionId(initialSessionId);
+        }
+    }, [initialSessionId, currentSessionId]);
+
+    useEffect(() => {
         if (currentSessionId) {
             fetchSessionMessages(currentSessionId);
         } else {

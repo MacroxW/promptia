@@ -1,6 +1,6 @@
 import { ObjectId, type WithId } from 'mongodb'
-import { getCollection } from '@repo/database'
-import type { Session } from '@repo/types'
+import { getCollection } from '@promptia/database'
+import type { Session } from '@promptia/types'
 
 import { AppError } from '@/middleware/error-handler'
 
