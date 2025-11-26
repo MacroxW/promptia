@@ -77,7 +77,13 @@ export class ChatService {
     }
   }
 
-  async streamMessage(userId: string, sessionId: string, message: string) {
+  async streamMessage(
+    userId: string,
+    sessionId: string,
+    message: string,
+    systemPrompt?: string,
+    temperature?: number
+  ) {
     try {
       // Save user message
       await createMessage({
@@ -86,9 +92,25 @@ export class ChatService {
         content: message
       });
 
-      const chat = this.model.startChat({
+      const chatConfig: any = {
         history: [],
-      });
+      };
+
+      // Add system instruction if provided - must be in Content format
+      if (systemPrompt) {
+        chatConfig.systemInstruction = {
+          parts: [{ text: systemPrompt }]
+        };
+      }
+
+      // Add generation config if temperature provided
+      if (temperature !== undefined) {
+        chatConfig.generationConfig = {
+          temperature: temperature
+        };
+      }
+
+      const chat = this.model.startChat(chatConfig);
 
       return this.handleStreamWithTools(chat, message);
     } catch (error) {
