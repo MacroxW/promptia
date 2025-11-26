@@ -28,6 +28,7 @@ export const useAuth = () => {
             const response = await res.json();
             localStorage.setItem("token", response.token);
             navigate("/chat", { replace: true });
+            window.dispatchEvent(new Event("auth-change"));
 
             return response;
         } catch (err) {
