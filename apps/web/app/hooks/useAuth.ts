@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { type LoginInput, type RegisterInput } from "@promptia/schemas";
 import { useNavigate } from "react-router";
 
@@ -7,7 +7,21 @@ const URL_API = "http://localhost:4000";
 export const useAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const checkAuth = () => {
+            const token = localStorage.getItem("token");
+            setIsAuthenticated(!!token);
+            setIsCheckingAuth(false);
+        };
+
+        checkAuth();
+        window.addEventListener("auth-change", checkAuth);
+        return () => window.removeEventListener("auth-change", checkAuth);
+    }, []);
 
     const login = async (data: LoginInput) => {
         setIsLoading(true);
@@ -77,11 +91,9 @@ export const useAuth = () => {
 
     const logout = () => {
         localStorage.removeItem("token");
+        setIsAuthenticated(false);
+        window.dispatchEvent(new Event("auth-change"));
         navigate("/login", { replace: true });
-    };
-
-    const isAuthenticated = () => {
-        return !!localStorage.getItem("token");
     };
 
     return {
@@ -89,6 +101,7 @@ export const useAuth = () => {
         register,
         logout,
         isAuthenticated,
+        isCheckingAuth,
         isLoading,
         error
     };

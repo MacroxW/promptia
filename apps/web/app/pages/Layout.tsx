@@ -1,28 +1,8 @@
-import { Links, Meta, Scripts, ScrollRestoration, useNavigate, Link } from "react-router";
-import { useEffect, useState } from "react";
+import { Links, Meta, Scripts, ScrollRestoration, Link } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem("token");
-      setIsAuthenticated(!!token);
-      setIsLoading(false);
-    };
-
-    checkAuth();
-    window.addEventListener("auth-change", checkAuth);
-    return () => window.removeEventListener("auth-change", checkAuth);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsAuthenticated(false);
-    window.dispatchEvent(new Event("auth-change"));
-    window.location.href = "/login";
-  };
+  const { isAuthenticated, isCheckingAuth, logout } = useAuth();
 
   return (
     <html lang="en">
@@ -59,14 +39,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </nav>
 
             <div aria-label="auth" className="flex gap-3">
-              {isLoading ? (
+              {isCheckingAuth ? (
                 <div className="flex gap-3 animate-pulse">
                   <div className="w-20 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
                   <div className="w-24 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
                 </div>
               ) : isAuthenticated ? (
                 <button
-                  onClick={handleLogout}
+                  onClick={logout}
                   className="px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors"
                 >
                   Logout
@@ -76,9 +56,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <a href="/login" className="px-4 py-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors">
                     Login
                   </a>
-                  <button className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium shadow-sm hover:shadow-md transition-all">
+                  <a href="/register" className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium shadow-sm hover:shadow-md transition-all">
                     Register
-                  </button>
+                  </a>
                 </>
               )}
             </div>
