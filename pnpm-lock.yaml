@@ -23,19 +23,19 @@ importers:
       '@google/generative-ai':
         specifier: ^0.24.1
         version: 0.24.1
+      '@promptia/constants':
+        specifier: workspace:*
+        version: link:../../packages/constants
+      '@promptia/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       '@promptia/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
-      '@repo/constants':
-        specifier: workspace:*
-        version: link:../../packages/constants
-      '@repo/database':
-        specifier: workspace:*
-        version: link:database
-      '@repo/types':
+      '@promptia/types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@repo/utils':
+      '@promptia/utils':
         specifier: workspace:*
         version: link:src/utils
       bcryptjs:
@@ -102,12 +102,6 @@ importers:
       vitest:
         specifier: ^4.0.14
         version: 4.0.14(@types/node@20.19.25)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
-
-  apps/server/database:
-    dependencies:
-      mongodb:
-        specifier: ^6.8.0
-        version: 6.21.0
 
   apps/server/src/utils:
     devDependencies:
@@ -178,6 +172,12 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
+
+  packages/database:
+    dependencies:
+      mongodb:
+        specifier: ^6.8.0
+        version: 6.21.0
 
   packages/schemas:
     dependencies:
