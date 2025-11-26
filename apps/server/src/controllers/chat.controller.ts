@@ -71,7 +71,7 @@ export class ChatController {
 
       // Auto-generate title after 2 messages (1 user + 1 AI = 2 total messages)
       const messages = await messageRepository.listBySession(payload.sessionId);
-      
+
       // Check if we have exactly 2 messages and the session still has default title
       if (messages.length === 2 && (session.title === "New Chat" || session.title === "Nueva conversación")) {
         try {
@@ -92,6 +92,26 @@ export class ChatController {
         res.write(`data: ${JSON.stringify({ error: "Error interno del servidor" })}\n\n`);
         res.end();
       }
+    }
+  }
+
+  async generateAudio(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return next(new AppError('No autorizado', 401));
+      }
+
+      const { text } = req.body;
+
+      if (!text || typeof text !== 'string') {
+        return next(new AppError('Text is required', 400));
+      }
+
+      const audioData = await chatService.generateSpeech(text);
+
+      return res.json({ audioData });
+    } catch (error) {
+      return next(error);
     }
   }
 }

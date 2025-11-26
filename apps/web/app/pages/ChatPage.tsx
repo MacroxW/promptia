@@ -1,6 +1,6 @@
 import { Sidebar } from "../components/Sidebar";
+import { MessageBubble } from "../components/MessageBubble";
 import { useChat } from "../hooks/useChat";
-import ReactMarkdown from "react-markdown";
 import { useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 
@@ -103,24 +103,7 @@ const ChatPage = () => {
                         </div>
                     ) : (
                         messages.map((m, i) => (
-                            <div key={i} className={`flex mb-4 ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
-                                <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-md ${m.sender === "user"
-                                    ? "bg-blue-600 text-white rounded-br-sm"
-                                    : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-sm"
-                                    }`}>
-                                    {m.text ? (
-                                        <div className="markdown-body">
-                                            <ReactMarkdown>{m.text}</ReactMarkdown>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                            <MessageBubble key={i} text={m.text || ""} sender={m.sender} />
                         ))
                     )}
                 </div>

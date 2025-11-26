@@ -219,6 +219,81 @@ export class ChatService {
       content
     });
   }
+
+  async generateSpeech(text: string): Promise<string> {
+    try {
+      const model = this.genAI.getGenerativeModel({
+        model: "gemini-2.5-flash-preview-tts",
+      });
+
+      // Type assertion needed as TTS config isn't in current @google/generative-ai types
+      const result = await model.generateContent({
+        contents: [{ role: "user", parts: [{ text }] }],
+        generationConfig: {
+          responseModalities: ["AUDIO"],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: {
+                voiceName: "Kore",
+              },
+            },
+          },
+        } as any,
+      });
+
+      const response = await result.response;
+
+      // Extract audio data from response (this is raw PCM data)
+      const pcmData = (response as any).candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+
+      if (!pcmData) {
+        throw new AppError("No se pudo generar el audio", 500);
+      }
+
+      // Convert base64 PCM to buffer
+      const pcmBuffer = Buffer.from(pcmData, 'base64');
+
+      // Add WAV header to PCM data (24kHz, mono, 16-bit)
+      const wavBuffer = this.addWavHeader(pcmBuffer, 24000, 1, 16);
+
+      // Convert back to base64
+      return wavBuffer.toString('base64');
+    } catch (error) {
+      console.error("Error generating speech:", error);
+      throw new AppError("Error al generar el audio", 500);
+    }
+  }
+
+  private addWavHeader(pcmData: Buffer, sampleRate: number, channels: number, bitsPerSample: number): Buffer {
+    const blockAlign = channels * (bitsPerSample / 8);
+    const byteRate = sampleRate * blockAlign;
+    const dataSize = pcmData.length;
+    const headerSize = 44;
+    const fileSize = headerSize + dataSize - 8;
+
+    const header = Buffer.alloc(headerSize);
+
+    // RIFF chunk descriptor
+    header.write('RIFF', 0);
+    header.writeUInt32LE(fileSize, 4);
+    header.write('WAVE', 8);
+
+    // fmt sub-chunk
+    header.write('fmt ', 12);
+    header.writeUInt32LE(16, 16); // Subchunk1Size (16 for PCM)
+    header.writeUInt16LE(1, 20); // AudioFormat (1 for PCM)
+    header.writeUInt16LE(channels, 22);
+    header.writeUInt32LE(sampleRate, 24);
+    header.writeUInt32LE(byteRate, 28);
+    header.writeUInt16LE(blockAlign, 32);
+    header.writeUInt16LE(bitsPerSample, 34);
+
+    // data sub-chunk
+    header.write('data', 36);
+    header.writeUInt32LE(dataSize, 40);
+
+    return Buffer.concat([header, pcmData]);
+  }
 }
 
 export const chatService = new ChatService();
