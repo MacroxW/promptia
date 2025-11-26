@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
-import { createMessage } from "@/repositories/message.repository";
+import { messageRepository } from "@/repositories/message.repository";
 import { AppError } from "@/middleware/error-handler";
 
 export class ChatService {
@@ -46,7 +46,7 @@ export class ChatService {
 
   async sendMessage(userId: string, sessionId: string, message: string): Promise<string> {
     try {
-      await createMessage({
+      await messageRepository.create({
         sessionId,
         role: "user",
         content: message
@@ -61,7 +61,7 @@ export class ChatService {
       const response = await result.response;
       const text = response.text();
 
-      await createMessage({
+      await messageRepository.create({
         sessionId,
         role: "agent",
         content: text
@@ -82,7 +82,7 @@ export class ChatService {
     temperature?: number
   ) {
     try {
-      await createMessage({
+      await messageRepository.create({
         sessionId,
         role: "user",
         content: message
@@ -189,7 +189,7 @@ export class ChatService {
   }
 
   async saveBotMessage(sessionId: string, content: string) {
-    await createMessage({
+    await messageRepository.create({
       sessionId,
       role: "agent",
       content

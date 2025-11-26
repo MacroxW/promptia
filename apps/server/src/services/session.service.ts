@@ -4,34 +4,29 @@ import { sanitizeString } from '@repo/utils'
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
 import { AppError } from '@/middleware/error-handler'
-import {
-  createSession as createSessionRepo,
-  findSessionById,
-  listSessionsByUser,
-  updateSessionTitle as updateSessionTitleRepo
-} from '@/repositories/session.repository'
-import { listMessagesBySession } from '@/repositories/message.repository'
+import { sessionRepository } from '@/repositories/session.repository'
+import { messageRepository } from '@/repositories/message.repository'
 
 export type SessionDetail = Session & {
   messages: Message[]
 }
 
 export async function createSession(userId: string, input: CreateSessionInput): Promise<Session> {
-  return createSessionRepo({
+  return sessionRepository.create({
     userId,
     title: sanitizeString(input.title)
   })
 }
 
 export async function listUserSessions(userId: string): Promise<Session[]> {
-  return listSessionsByUser(userId)
+  return sessionRepository.listByUser(userId)
 }
 
 export async function getSessionDetail(
   userId: string,
   sessionId: string
 ): Promise<SessionDetail> {
-  const session = await findSessionById(sessionId)
+  const session = await sessionRepository.findById(sessionId)
   if (!session) {
     throw new AppError('Sesión no encontrada', 404)
   }
@@ -40,7 +35,7 @@ export async function getSessionDetail(
     throw new AppError('No autorizado', 403)
   }
 
-  const messages = await listMessagesBySession(sessionId)
+  const messages = await messageRepository.listBySession(sessionId)
   return { ...session, messages }
 }
 
@@ -49,7 +44,7 @@ export async function updateSession(
   sessionId: string,
   input: UpdateSessionInput
 ): Promise<Session> {
-  const session = await findSessionById(sessionId)
+  const session = await sessionRepository.findById(sessionId)
   if (!session) {
     throw new AppError('Sesión no encontrada', 404)
   }
@@ -59,7 +54,7 @@ export async function updateSession(
   }
 
   if (input.title) {
-    const updatedSession = await updateSessionTitleRepo(sessionId, sanitizeString(input.title))
+    const updatedSession = await sessionRepository.updateTitle(sessionId, sanitizeString(input.title))
     if (!updatedSession) {
       throw new AppError('Error al actualizar sesión', 500)
     }

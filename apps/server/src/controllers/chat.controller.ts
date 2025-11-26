@@ -1,9 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import { sendMessageSchema, streamMessageSchema } from "@promptia/schemas";
 import { chatService } from "../services/chat.service";
-import { listMessagesBySession } from "../repositories/message.repository";
+import { messageRepository } from "../repositories/message.repository";
 import { generateSessionTitle, updateSession } from "../services/session.service";
-import { findSessionById } from "../repositories/session.repository";
+import { sessionRepository } from "../repositories/session.repository";
 import { AppError } from "../middleware/error-handler";
 
 export class ChatController {
@@ -55,8 +55,8 @@ export class ChatController {
       await chatService.saveBotMessage(payload.sessionId, fullText);
 
       // Auto-generate title after 2 messages (1 user + 1 AI = 2 total messages)
-      const messages = await listMessagesBySession(payload.sessionId);
-      const session = await findSessionById(payload.sessionId);
+      const messages = await messageRepository.listBySession(payload.sessionId);
+      const session = await sessionRepository.findById(payload.sessionId);
       
       // Check if we have exactly 2 messages and the session still has default title
       if (messages.length === 2 && session && (session.title === "New Chat" || session.title === "Nueva conversación")) {

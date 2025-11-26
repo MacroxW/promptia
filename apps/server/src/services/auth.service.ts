@@ -6,7 +6,7 @@ import { sanitizeEmail } from '@repo/utils'
 
 import { env } from '@/config/env'
 import { AppError } from '@/middleware/error-handler'
-import { createUser, findUserByEmail, type UserRecord } from '@/repositories/user.repository'
+import { userRepository, type UserRecord } from '@/repositories/user.repository'
 
 const buildAuthResponse = (user: UserRecord): LoginResponse => ({
   token: jwt.sign(
@@ -25,14 +25,14 @@ const buildAuthResponse = (user: UserRecord): LoginResponse => ({
 
 export async function registerUser(input: RegisterInput): Promise<LoginResponse> {
   const email = sanitizeEmail(input.email)
-  const existingUser = await findUserByEmail(email)
+  const existingUser = await userRepository.findByEmail(email)
 
   if (existingUser) {
     throw new AppError('El email ya está registrado', 409)
   }
 
   const hashedPassword = await bcrypt.hash(input.password, env.bcryptSaltRounds)
-  const user = await createUser({
+  const user = await userRepository.create({
     email,
     password: hashedPassword,
     name: input.name ?? null
@@ -43,7 +43,7 @@ export async function registerUser(input: RegisterInput): Promise<LoginResponse>
 
 export async function loginUser(input: LoginInput): Promise<LoginResponse> {
   const email = sanitizeEmail(input.email)
-  const user = await findUserByEmail(email)
+  const user = await userRepository.findByEmail(email)
 
   if (!user) {
     throw new AppError('Credenciales inválidas', 401)
