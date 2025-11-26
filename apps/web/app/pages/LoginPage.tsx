@@ -2,7 +2,6 @@ import { useState } from "react";
 import { loginSchema, type LoginInput } from '@promptia/schemas'
 import { useAuth } from "~/hooks/useAuth";
 import { Input } from "../components/Input";
-import { ZodError } from "zod";
 
 const LoginPage = () => {
     const { login, isLoading, error } = useAuth();
@@ -27,11 +26,12 @@ const LoginPage = () => {
             setFieldErrors({}) // Limpiar errores previos
             await loginSchema.parseAsync(formValues)
             await login(formValues)
-        } catch (error) {
-            if (error instanceof ZodError) {
+        } catch (error: any) {
+            // Verificar si es un error de validación de Zod
+            if (error?.issues && Array.isArray(error.issues)) {
                 // Convertir errores de Zod a errores por campo
                 const errors: Partial<Record<keyof LoginInput, string>> = {}
-                error.errors.forEach((err) => {
+                error.issues.forEach((err: any) => {
                     if (err.path[0]) {
                         errors[err.path[0] as keyof LoginInput] = err.message
                     }
