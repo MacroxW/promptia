@@ -226,15 +226,28 @@ export class ChatService {
         model: "gemini-2.5-flash-preview-tts",
       });
 
-      // Type assertion needed as TTS config isn't in current @google/generative-ai types
       const result = await model.generateContent({
-        contents: [{ role: "user", parts: [{ text }] }],
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `
+                  Hablá con voz masculina, muy rápida y con acento argentino.
+                  Leé lo siguiente de manera natural:
+
+                  ${text}
+                            `,
+              },
+            ],
+          },
+        ],
         generationConfig: {
           responseModalities: ["AUDIO"],
           speechConfig: {
             voiceConfig: {
               prebuiltVoiceConfig: {
-                voiceName: "Kore",
+                voiceName: "Orus",
               },
             },
           },
