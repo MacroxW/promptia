@@ -3,9 +3,9 @@ import { sessionController } from '@/controllers/session.controller'
 
 const router: ExpressRouter = Router()
 
-router.get('/', sessionController.listSessions.bind(sessionController))
-router.post('/', sessionController.createSession.bind(sessionController))
-router.get('/:id', sessionController.getSession.bind(sessionController))
-router.patch('/:id', sessionController.updateSession.bind(sessionController))
+router.get('/', sessionController.listSessions)
+router.post('/', sessionController.createSession)
+router.get('/:id', sessionController.getSession)
+router.patch('/:id', sessionController.updateSession)
 
 export default router
