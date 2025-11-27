@@ -30,6 +30,7 @@
   "include": [
     "src/**/*",
     "tests/**/*",
+    "database/**/*",
     "vitest.config.ts"
   ],
   "exclude": [

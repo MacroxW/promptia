@@ -5,9 +5,9 @@ import type { Message } from "@promptia/types";
 
 interface ModelConfig {
   model: string;
-  tools: { functionDeclarations: any[] };
+  tools: { functionDeclarations: any[] }[];
   generationConfig?: { temperature: number };
-  systemInstruction?: { parts: { text: string }[] };
+  systemInstruction?: string;
 }
 
 interface ToolResult {
@@ -98,7 +98,7 @@ export class ChatService {
 
       const modelConfig = this.buildModelConfig(temperature, systemPrompt);
       const history = await this.buildChatHistory(sessionId, systemPrompt);
-      
+
       const model = this.genAI.getGenerativeModel(modelConfig);
       const chat = model.startChat({ history });
 
@@ -120,9 +120,7 @@ export class ChatService {
     }
 
     if (systemPrompt) {
-      config.systemInstruction = {
-        parts: [{ text: systemPrompt }]
-      };
+      config.systemInstruction = systemPrompt;
     }
 
     return config;
@@ -225,7 +223,7 @@ export class ChatService {
   private generateImage(args: any): ToolResult {
     const encodedPrompt = encodeURIComponent(args.prompt);
     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
-    
+
     return {
       imageUrl,
       markdown: `![Generated Image](${imageUrl})`,
