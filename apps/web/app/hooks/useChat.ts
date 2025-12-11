@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface Message {
     sender: "user" | "bot";
     text: string;
@@ -32,7 +34,7 @@ export const useChat = (initialSessionId?: string) => {
     const fetchSessionMessages = async (sessionId: string) => {
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:4000/api/sessions/${sessionId}`, {
+            const response = await fetch(`${API_URL}/api/sessions/${sessionId}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
@@ -67,7 +69,7 @@ export const useChat = (initialSessionId?: string) => {
             const token = localStorage.getItem("token");
             abortControllerRef.current = new AbortController();
 
-            const response = await fetch("http://localhost:4000/api/chat/stream", {
+            const response = await fetch(`${API_URL}/api/chat/stream`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 /**
  * Interfaz de sesión
  */
@@ -14,7 +16,7 @@ export interface Session {
 /**
  * Funciones helper para llamar a la API de sesiones
  */
-const API_BASE_URL = "http://localhost:4000/api/sessions";
+const API_BASE_URL = `${API_URL}/api/sessions`;
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

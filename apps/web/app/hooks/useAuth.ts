@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { type LoginInput, type RegisterInput } from "@promptia/schemas";
 import { useNavigate } from "react-router";
 
-const URL_API = "http://localhost:4000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const useAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +28,7 @@ export const useAuth = () => {
         setError(null);
 
         try {
-            const res = await fetch(`${URL_API}/auth/login`, {
+            const res = await fetch(`${API_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
@@ -59,7 +59,7 @@ export const useAuth = () => {
         setError(null);
 
         try {
-            const res = await fetch(`${URL_API}/auth/register`, {
+            const res = await fetch(`${API_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)

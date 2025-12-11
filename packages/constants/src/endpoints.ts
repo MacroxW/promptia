@@ -1,4 +1,6 @@
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000'
+// URL base de la API - se puede sobrescribir con variable de entorno
+// En el cliente web, usar VITE_API_URL en el .env
+export const API_BASE_URL = 'http://localhost:4000'
 
 export const ENDPOINTS = {
   AUTH: {
