@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useSessions } from "../hooks/useSessions";
+import { useSessionEditor } from "../hooks/useSessionEditor";
 
-interface Session {
-    id: string;
-    title: string;
-    userId: string;
-    createdAt: string;
-    updatedAt: string;
-}
+/**
+ * Sidebar Component
+ * Responsabilidad: Presentación de la UI del sidebar
+ */
 
 interface SidebarProps {
     currentSessionId?: string;
@@ -15,101 +12,38 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ currentSessionId, onSessionSelect }: SidebarProps) => {
-    const [sessions, setSessions] = useState<Session[]>([]);
-    const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
-    const [editTitle, setEditTitle] = useState("");
-    const navigate = useNavigate();
+    // Hooks para manejar sesiones y edición
+    const { sessions, createSession, updateSessionTitle } = useSessions({
+        currentSessionId,
+        onSessionSelect
+    });
 
-    const fetchSessions = useCallback(async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:4000/api/sessions", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setSessions(data.sessions);
+    const {
+        editingSessionId,
+        editTitle,
+        startEditing,
+        cancelEditing,
+        updateEditTitle
+    } = useSessionEditor();
 
-                // Select first session if none selected and sessions exist
-                if (!currentSessionId && data.sessions.length > 0) {
-                    onSessionSelect(data.sessions[0].id);
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching sessions:", error);
-        }
-    }, [currentSessionId, onSessionSelect]);
-
-    useEffect(() => {
-        fetchSessions();
-    }, [fetchSessions]);
-
-    useEffect(() => {
-        // Refresh sessions every 2 seconds to catch auto-generated titles
-        const interval = setInterval(() => {
-            fetchSessions();
-        }, 2000);
-        return () => clearInterval(interval);
-    }, [fetchSessions]);
-
+    // Handlers
     const handleNewChat = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:4000/api/sessions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({ title: "New Chat" })
-            });
-
-            if (response.ok) {
-                const newSession = await response.json();
-                setSessions([newSession, ...sessions]);
-                onSessionSelect(newSession.id);
-            }
-        } catch (error) {
-            console.error("Error creating session:", error);
-        }
+        await createSession("New Chat");
     };
 
-    const handleRenameStart = (session: Session) => {
-        setEditingSessionId(session.id);
-        setEditTitle(session.title);
-    };
-
-    const handleRenameCancel = () => {
-        setEditingSessionId(null);
-        setEditTitle("");
+    const handleRenameStart = (sessionId: string, currentTitle: string) => {
+        startEditing(sessionId, currentTitle);
     };
 
     const handleRenameSubmit = async (sessionId: string) => {
         if (!editTitle.trim()) {
-            handleRenameCancel();
+            cancelEditing();
             return;
         }
 
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:4000/api/sessions/${sessionId}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({ title: editTitle.trim() })
-            });
-
-            if (response.ok) {
-                const updatedSession = await response.json();
-                setSessions(sessions.map(s => s.id === sessionId ? updatedSession : s));
-                handleRenameCancel();
-            }
-        } catch (error) {
-            console.error("Error renaming session:", error);
+        const success = await updateSessionTitle(sessionId, editTitle.trim());
+        if (success) {
+            cancelEditing();
         }
     };
 
@@ -136,10 +70,10 @@ export const Sidebar = ({ currentSessionId, onSessionSelect }: SidebarProps) => 
                                 <input
                                     type="text"
                                     value={editTitle}
-                                    onChange={(e) => setEditTitle(e.target.value)}
+                                    onChange={(e) => updateEditTitle(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') handleRenameSubmit(session.id);
-                                        if (e.key === 'Escape') handleRenameCancel();
+                                        if (e.key === 'Escape') cancelEditing();
                                     }}
                                     className="px-2 py-1 text-sm bg-white dark:bg-gray-700 border border-blue-500 rounded focus:outline-none"
                                     autoFocus
@@ -152,7 +86,7 @@ export const Sidebar = ({ currentSessionId, onSessionSelect }: SidebarProps) => 
                                         Guardar
                                     </button>
                                     <button
-                                        onClick={handleRenameCancel}
+                                        onClick={cancelEditing}
                                         className="flex-1 px-2 py-1 text-xs bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
                                     >
                                         Cancelar
@@ -161,7 +95,7 @@ export const Sidebar = ({ currentSessionId, onSessionSelect }: SidebarProps) => 
                             </div>
                         ) : (
                             <div className="flex items-start justify-between gap-2">
-                                <div 
+                                <div
                                     onClick={() => onSessionSelect(session.id)}
                                     className="flex-1 cursor-pointer"
                                 >
@@ -175,7 +109,7 @@ export const Sidebar = ({ currentSessionId, onSessionSelect }: SidebarProps) => 
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleRenameStart(session);
+                                        handleRenameStart(session.id, session.title);
                                     }}
                                     className="p-1 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                     title="Renombrar chat"
