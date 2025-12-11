@@ -1,51 +1,31 @@
-import { useState } from "react";
 import { registerSchema, type RegisterInput } from '@promptia/schemas'
 import { useAuth } from "~/hooks/useAuth";
 import { Input } from "../components/Input";
+import { useFormValidation } from "../hooks/useFormValidation";
 
 const RegisterPage = () => {
-    const { register, isLoading, error } = useAuth();
+    const { register, isLoading } = useAuth();
 
-    const [formValues, setFormValues] = useState<RegisterInput>({
+    // Hook de validación de formularios
+    const { values, errors, setValue, validate } = useFormValidation<RegisterInput>({
         email: '',
         password: '',
         name: ''
-    })
-
-    const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof RegisterInput, string>>>({})
-
-    const setValue = (key: keyof RegisterInput, val: string) => {
-        setFormValues({ ...formValues, [key]: val })
-        // Limpiar error del campo cuando el usuario empieza a escribir
-        if (fieldErrors[key]) {
-            setFieldErrors({ ...fieldErrors, [key]: undefined })
-        }
-    }
+    });
 
     const handleSubmit = async () => {
-        try {
-            setFieldErrors({}) // Limpiar errores previos
-            await registerSchema.parseAsync(formValues)
-            await register(formValues)
-        } catch (error: any) {
-            // Verificar si es un error de validación de Zod
-            if (error?.issues && Array.isArray(error.issues)) {
-                // Convertir errores de Zod a errores por campo
-                const errors: Partial<Record<keyof RegisterInput, string>> = {}
-                error.issues.forEach((err: any) => {
-                    if (err.path[0]) {
-                        errors[err.path[0] as keyof RegisterInput] = err.message
-                    }
-                })
-                setFieldErrors(errors)
-            } else if (error instanceof Error) {
-                alert(error.message)
-            } else {
-                alert("Error en el registro")
+        // Validar formulario
+        const isValid = await validate(registerSchema);
+
+        if (isValid) {
+            try {
+                await register(values);
+            } catch (error: any) {
+                alert(error?.message || "Error en el registro");
+                console.log("Error de registro", error);
             }
-            console.log("Error de validacion o registro", error)
         }
-    }
+    };
 
     return (
         <div className="container mx-auto px-6 py-12 flex items-center justify-center min-h-[80vh]">
@@ -65,28 +45,28 @@ const RegisterPage = () => {
                         <Input
                             label="Name (Optional)"
                             type="text"
-                            value={formValues.name || ''}
+                            value={values.name || ''}
                             onChange={(e) => setValue('name', e.target.value)}
                             placeholder="John Doe"
-                            error={fieldErrors.name}
+                            error={errors.name}
                         />
 
                         <Input
                             label="Email"
                             type="email"
-                            value={formValues.email}
+                            value={values.email}
                             onChange={(e) => setValue('email', e.target.value)}
                             placeholder="tu@email.com"
-                            error={fieldErrors.email}
+                            error={errors.email}
                         />
 
                         <Input
                             label="Password"
                             type="password"
-                            value={formValues.password}
+                            value={values.password}
                             onChange={(e) => setValue('password', e.target.value)}
                             placeholder="••••••••"
-                            error={fieldErrors.password}
+                            error={errors.password}
                         />
 
                         <button

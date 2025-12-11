@@ -1,50 +1,30 @@
-import { useState } from "react";
 import { loginSchema, type LoginInput } from '@promptia/schemas'
 import { useAuth } from "~/hooks/useAuth";
 import { Input } from "../components/Input";
+import { useFormValidation } from "../hooks/useFormValidation";
 
 const LoginPage = () => {
-    const { login, isLoading, error } = useAuth();
+    const { login, isLoading } = useAuth();
 
-    const [formValues, setFormValues] = useState<LoginInput>({
+    // Hook de validación de formularios
+    const { values, errors, setValue, validate } = useFormValidation<LoginInput>({
         email: 'user@gmail.com',
         password: 'password12345'
-    })
-
-    const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof LoginInput, string>>>({})
-
-    const setValue = (key: keyof LoginInput, val: string) => {
-        setFormValues({ ...formValues, [key]: val })
-        // Limpiar error del campo cuando el usuario empieza a escribir
-        if (fieldErrors[key]) {
-            setFieldErrors({ ...fieldErrors, [key]: undefined })
-        }
-    }
+    });
 
     const handleSubmit = async () => {
-        try {
-            setFieldErrors({}) // Limpiar errores previos
-            await loginSchema.parseAsync(formValues)
-            await login(formValues)
-        } catch (error: any) {
-            // Verificar si es un error de validación de Zod
-            if (error?.issues && Array.isArray(error.issues)) {
-                // Convertir errores de Zod a errores por campo
-                const errors: Partial<Record<keyof LoginInput, string>> = {}
-                error.issues.forEach((err: any) => {
-                    if (err.path[0]) {
-                        errors[err.path[0] as keyof LoginInput] = err.message
-                    }
-                })
-                setFieldErrors(errors)
-            } else if (error instanceof Error) {
-                alert(error.message)
-            } else {
-                alert("Error en el login")
+        // Validar formulario
+        const isValid = await validate(loginSchema);
+
+        if (isValid) {
+            try {
+                await login(values);
+            } catch (error: any) {
+                alert(error?.message || "Error en el login");
+                console.log("Error de login", error);
             }
-            console.log("Error de validacion o login", error)
         }
-    }
+    };
 
     return (
         <div className="container mx-auto px-6 py-12 flex items-center justify-center min-h-[80vh]">
@@ -65,19 +45,19 @@ const LoginPage = () => {
                         <Input
                             label="Email"
                             type="email"
-                            value={formValues.email}
+                            value={values.email}
                             onChange={(e) => setValue('email', e.target.value)}
                             placeholder="tu@email.com"
-                            error={fieldErrors.email}
+                            error={errors.email}
                         />
 
                         <Input
                             label="Password"
                             type="password"
-                            value={formValues.password}
+                            value={values.password}
                             onChange={(e) => setValue('password', e.target.value)}
                             placeholder="••••••••"
-                            error={fieldErrors.password}
+                            error={errors.password}
                         />
 
                         <button
