@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 /**
  * Audio Player Hook
  * Responsabilidad: Generar audio desde la API y controlar reproducción
@@ -17,7 +19,7 @@ interface UseAudioPlayerReturn {
 const fetchAudioFromAPI = async (text: string): Promise<string> => {
     const token = localStorage.getItem("token");
 
-    const response = await fetch("http://localhost:4000/api/chat/generate-audio", {
+    const response = await fetch(`${API_URL}/api/chat/generate-audio`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
